@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>KiezFlow | Berlin Mahalle Rehberi</title>
+    <meta name="description" content="Berlin'de mahalle bazlı yerel hizmet ve etkinlik rehberi. Hemen keşfet!">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="KiezFlow | Berlin Mahalle Rehberi">
+    <meta property="og:description" content="Mahallene özel yerel kaynakları keşfet. Yakında mobil uygulama!">
+    <meta property="og:image" content="https://www.kiezflow.de/og-image.jpg">
+    <meta property="og:url" content="https://www.kiezflow.de">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="KiezFlow">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="KiezFlow | Berlin Mahalle Rehberi">
+    <meta name="twitter:description" content="Mahallene özel yerel kaynakları keşfet. Yakında mobil uygulama!">
+    <meta name="twitter:image" content="https://www.kiezflow.de/og-image.jpg">
+    
+    <link rel="icon" href="https://www.kiezflow.de/favicon.ico">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f4f7fc;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 24px 20px;
+            color: #1a2c3e;
+        }
+        .app-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .brand {
+            background: #04162E;
+            padding: 18px 28px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .brand h1 { font-weight: 600; font-size: 1.6rem; letter-spacing: -0.3px; }
+        .brand h1 span { color: #F6B45F; }
+        .badge {
+            font-size: 0.8rem;
+            background: rgba(246,180,95,0.15);
+            padding: 6px 12px;
+            border-radius: 60px;
+            color: #F6B45F;
+        }
+        .view { padding: 28px 32px; }
+        .lang-selector { display: flex; gap: 12px; justify-content: center; margin-bottom: 28px; flex-wrap: wrap; }
+        .lang-btn {
+            background: #eef2f5; border: none; padding: 8px 24px;
+            border-radius: 60px; font-weight: 600; cursor: pointer;
+            transition: 0.2s; font-size: 1rem;
+        }
+        .lang-btn.active { background: #04162E; color: white; }
+        .btn-primary {
+            background: #04162E; color: white; border: none;
+            padding: 14px 32px; border-radius: 60px; font-weight: 600;
+            font-size: 1rem; margin-top: 20px; cursor: pointer; transition: 0.2s;
+            display: inline-block; text-decoration: none;
+        }
+        .btn-primary:hover { background: #0a2a4a; }
+        .btn-share {
+            background: #F6B45F; color: #04162E; border: none;
+            padding: 14px 32px; border-radius: 60px; font-weight: 700;
+            font-size: 1rem; margin-top: 12px; cursor: pointer; transition: 0.2s;
+            display: block; width: 100%; text-align: center;
+        }
+        .btn-share:hover { background: #e5a44e; }
+        .btn-feedback {
+            background: transparent; color: #04162E;
+            border: 2px solid #04162E;
+            padding: 12px 28px; border-radius: 60px; font-weight: 600;
+            font-size: 0.95rem; margin-top: 12px; cursor: pointer; transition: 0.2s;
+            display: inline-block; text-decoration: none;
+        }
+        .btn-feedback:hover { background: #04162E; color: white; }
+        .btn-waitlist {
+            background: #2c6e2c; color: white; border: none;
+            padding: 12px 24px; border-radius: 60px; font-weight: 600;
+            font-size: 0.9rem; cursor: pointer; transition: 0.2s;
+            margin-left: 10px;
+        }
+        .btn-waitlist:hover { background: #1e4f1e; }
+        .waitlist-input {
+            padding: 12px 16px;
+            border-radius: 60px;
+            border: 2px solid #cad2db;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 180px;
+        }
+        .select-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 60px;
+            border: 2px solid #cad2db;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            background: white;
+        }
+        .interests-group {
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .interest-check {
+            background: #f0f4f9;
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.15s;
+            font-size: 0.9rem;
+            border: 2px solid transparent;
+        }
+        .interest-check.selected {
+            background: #04162E;
+            color: white;
+            border-color: #F6B45F;
+        }
+        .warning {
+            color: #c0392b;
+            font-size: 0.85rem;
+            margin: 8px 0;
+        }
+        .result-card {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 24px;
+            margin: 20px 0;
+        }
+        .result-card h3 {
+            color: #04162E;
+            margin-bottom: 16px;
+        }
+        .resource-item {
+            background: white;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 12px;
+            border-left: 4px solid #F6B45F;
+        }
+        .resource-item strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+        .disclaimer {
+            font-size: 0.75rem;
+            color: #5f7f9a;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .waitlist-container {
+            background: rgba(4,22,46,0.05);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .waitlist-container h4 {
+            color: #04162E;
+            margin-bottom: 12px;
+        }
+        .waitlist-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+        .share-section {
+            text-align: center;
+            padding: 24px 20px;
+            background: rgba(246,180,95,0.08);
+            border-radius: 24px;
+            margin-top: 20px;
+        }
+        .footer-note {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 24px;
+            color: #5f7f9a;
+            border-top: 1px solid #e2edf2;
+            padding-top: 20px;
+        }
+        @media (max-width: 620px) {
+            body { padding: 12px; }
+            .view { padding: 20px 16px; }
+            .waitlist-form { flex-direction: column; align-items: center; }
+            .btn-waitlist { margin-left: 0; margin-top: 8px; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="brand">
+        <h1>Kiez<span>Flow</span></h1>
+        <div class="badge">🏙️ PACDI | Berlin Mahalle Rehberi</div>
+    </div>
+    <div id="dynamicView" class="view"></div>
+</div>
+
+<script>
+// Dil verileri - GÜNCELLENMİŞ ALMANCA METİNLER (native, akıcı)
+var texts = {
+    tr: {
+        title: "Berlin Mahalle Rehberi",
+        desc: "Mahallene özel yerel hizmetleri keşfet.",
+        start: "Başla",
+        lang_choose: "Dil Seç",
+        neighborhood_label: "Mahallenizi seçin",
+        interests_label: "İlgi alanlarınızı seçin (en fazla 3)",
+        interests: {
+            sozial: "Sosyal yardım ofisleri",
+            kinder: "Çocuk ve aile hizmetleri",
+            jugend: "Gençlik merkezleri",
+            seniors: "Yaşlı hizmetleri",
+            sprach: "Dil kursları",
+            arbeit: "İstihdam desteği",
+            gesundheit: "Sağlık hizmetleri",
+            kultur: "Kültür ve etkinlikler"
+        },
+        next: "İleri →",
+        back: "← Geri",
+        finish: "Rehberi Göster",
+        results_title: "Mahallene özel kaynaklar",
+        realtime_note: "Gerçek zamanlı veriler yakında!",
+        waitlist_title: "KiezFlow uygulaması çıkınca haber al",
+        waitlist_placeholder: "E-posta adresiniz",
+        waitlist_button: "Listeye Katıl",
+        waitlist_success: "Teşekkürler! Size ulaşacağız.",
+        waitlist_error: "Geçerli bir e-posta adresi girin.",
+        share_text_prefix: "Berlin ",
+        share_text_suffix: " için KiezFlow rehberini keşfettim!",
+        share_button: "Paylaş",
+        feedback: "Geri Bildirim Gönder",
+        recommend: "Arkadaşlarına öner!",
+        beta_note: "Yakında mobil uygulama",
+        privacy_note: "Veri gizliliği dostu · Kişisel veri saklanmaz"
+    },
+    de: {
+        title: "Berliner Kiezführer",
+        desc: "Entdecke lokale Angebote und Dienste in deinem Kiez.",
+        start: "Starten",
+        lang_choose: "Sprache wählen",
+        neighborhood_label: "Wähle deinen Kiez",
+        interests_label: "Wähle deine Interessen (max. 3)",
+        interests: {
+            sozial: "Sozialämter & Beratung",
+            kinder: "Kinder- & Familienhilfe",
+            jugend: "Jugendzentren & Freizeit",
+            seniors: "Seniorenhilfe & Begegnung",
+            sprach: "Sprachkurse & Integration",
+            arbeit: "Arbeitsförderung & Beratung",
+            gesundheit: "Gesundheitsdienste",
+            kultur: "Kultur & Veranstaltungen"
+        },
+        next: "Weiter →",
+        back: "← Zurück",
+        finish: "Führer anzeigen",
+        results_title: "Lokale Ressourcen in deinem Kiez",
+        realtime_note: "Echtzeitdaten bald verfügbar!",
+        waitlist_title: "Benachrichtigung zum KiezFlow-Start",
+        waitlist_placeholder: "Deine E-Mail-Adresse",
+        waitlist_button: "Auf die Liste setzen",
+        waitlist_success: "Danke! Wir melden uns.",
+        waitlist_error: "Bitte gib eine gültige E-Mail-Adresse ein.",
+        share_text_prefix: "Ich habe den KiezFlow-Guide für ",
+        share_text_suffix: " entdeckt!",
+        share_button: "Teilen",
+        feedback: "Feedback senden",
+        recommend: "Freunden empfehlen!",
+        beta_note: "Bald als mobile App",
+        privacy_note: "Datenschutzfreundlich · Keine Speicherung personenbezogener Daten"
+    },
+    en: {
+        title: "Berlin Neighborhood Guide",
+        desc: "Discover local services in your neighborhood.",
+        start: "Start",
+        lang_choose: "Select Language",
+        neighborhood_label: "Select your neighborhood",
+        interests_label: "Select your interests (max 3)",
+        interests: {
+            sozial: "Social welfare offices",
+            kinder: "Children & family services",
+            jugend: "Youth centers",
+            seniors: "Senior services",
+            sprach: "Language courses",
+            arbeit: "Employment support",
+            gesundheit: "Health services",
+            kultur: "Culture & events"
+        },
+        next: "Next →",
+        back: "← Back",
+        finish: "Show Guide",
+        results_title: "Local resources in your neighborhood",
+        realtime_note: "Real-time data coming soon!",
+        waitlist_title: "Get notified when KiezFlow launches",
+        waitlist_placeholder: "Your email address",
+        waitlist_button: "Join Waitlist",
+        waitlist_success: "Thank you! We'll be in touch.",
+        waitlist_error: "Please enter a valid email address.",
+        share_text_prefix: "I discovered the KiezFlow guide for ",
+        share_text_suffix: "!",
+        share_button: "Share",
+        feedback: "Send Feedback",
+        recommend: "Recommend to friends!",
+        beta_note: "Mobile app coming soon",
+        privacy_note: "Privacy-friendly · No personal data stored"
+    }
+};
+
+// Statik veri: mahalle + ilgi alanı -> kaynak listesi (örnek)
+var resourceData = {
+    "Mitte": {
+        sozial: ["Sozialamt Mitte - Rathausstr. 1", "Jobcenter Berlin Mitte - Karl-Marx-Allee 6"],
+        kinder: ["Familienzentrum Mitte - Brunnenstr. 20", "Kita-Finder Mitte"],
+        jugend: ["Jugendclub Mitte - Torstr. 50"],
+        seniors: ["Seniorenbeirat Mitte - Rathausstr. 5"],
+        sprach: ["VHS Berlin Mitte - Linienstr. 162", "SprachCafé Mitte - Oranienburger Str. 30"],
+        arbeit: ["Arbeitsagentur Berlin Mitte - Friedrichstr. 15"],
+        gesundheit: ["Gesundheitsamt Mitte - Karl-Marx-Allee 31"],
+        kultur: ["Berliner Ensemble - Bertolt-Brecht-Platz 1", "Hackesche Höfe"]
+    },
+    "Kreuzberg": {
+        sozial: ["Sozialamt Friedrichshain-Kreuzberg - Yorckstr. 4", "Jobcenter Kreuzberg - Oranienstr. 106"],
+        kinder: ["Kinder- und Jugendzentrum Kreuzberg - Reichenberger Str. 128"],
+        jugend: ["Jugendclub X-Berg - Großbeerenstr. 80"],
+        seniors: ["Nachbarschaftshaus Kreuzberg - Oranienstr. 34"],
+        sprach: ["VHS Berlin Kreuzberg - Bergmannstr. 14", "Sprachzentrum am Kottbusser Tor"],
+        arbeit: ["Arbeitsagentur Kreuzberg - Skalitzer Str. 90"],
+        gesundheit: ["Gesundheitsamt Friedrichshain-Kreuzberg - Frankfurter Allee 35"],
+        kultur: ["Görlitzer Park", "Kino Babylon"]
+    },
+    "Neukölln": {
+        sozial: ["Sozialamt Neukölln - Karl-Marx-Str. 83", "Jobcenter Neukölln - Sonnenallee 107"],
+        kinder: ["Familienzentrum Neukölln - Donaustr. 29"],
+        jugend: ["Jugendzentrum Neukölln - Flughafenstr. 47"],
+        seniors: ["Seniorenclub Neukölln - Richardstr. 34"],
+        sprach: ["VHS Neukölln - Boddinstr. 34", "Sprachschule am Hermannplatz"],
+        arbeit: ["Arbeitsagentur Neukölln - Karl-Marx-Str. 83"],
+        gesundheit: ["Gesundheitsamt Neukölln - Morusstr. 13"],
+        kultur: ["Tempelhofer Feld", "Neuköllner Oper"]
+    },
+    "Prenzlauer Berg": {
+        sozial: ["Sozialamt Pankow - Fröbelstr. 17", "Jobcenter Prenzlauer Berg - Danziger Str. 50"],
+        kinder: ["KinderKinder - Helmholtzplatz", "Familienzentrum Kollwitzplatz"],
+        jugend: ["Jugendclub Prenzlberg - Prenzlauer Allee 190"],
+        seniors: ["Seniorenzentrum Prenzlauer Berg - Greifenhagener Str. 57"],
+        sprach: ["VHS Pankow - Schulstr. 29", "Sprachzentrum am Mauerpark"],
+        arbeit: ["Arbeitsagentur Pankow - Storkower Str. 140"],
+        gesundheit: ["Gesundheitsamt Pankow - Fröbelstr. 17"],
+        kultur: ["Mauerpark", "Kulturbrauerei"]
+    },
+    "Friedrichshain": {
+        sozial: ["Sozialamt Friedrichshain-Kreuzberg - Frankfurter Allee 35", "Jobcenter Friedrichshain - Warschauer Str. 40"],
+        kinder: ["Kinderladen Friedrichshain - Boxhagener Str. 15"],
+        jugend: ["Jugendclub Friedrichshain - Simon-Dach-Str. 21"],
+        seniors: ["Seniorentreff Friedrichshain - Boxhagener Str. 99"],
+        sprach: ["VHS Friedrichshain - Ziegrastr. 1"],
+        arbeit: ["Arbeitsagentur Friedrichshain - Warschauer Str. 40"],
+        gesundheit: ["Gesundheitsamt Friedrichshain-Kreuzberg - Frankfurter Allee 35"],
+        kultur: ["Boxhagener Platz", "RAW-Gelände"]
+    },
+    "Charlottenburg": {
+        sozial: ["Sozialamt Charlottenburg-Wilmersdorf - Otto-Suhr-Allee 100", "Jobcenter Charlottenburg - Hohenzollerndamm 31"],
+        kinder: ["Familienzentrum Charlottenburg - Sybelstr. 20"],
+        jugend: ["Jugendzentrum Charlottenburg - Schlossstr. 78"],
+        seniors: ["Seniorenresidenz Charlottenburg - Bismarckstr. 110"],
+        sprach: ["VHS City West - Pestalozzistr. 40", "Goethe-Institut Berlin"],
+        arbeit: ["Arbeitsagentur Charlottenburg - Hohenzollerndamm 31"],
+        gesundheit: ["Gesundheitsamt Charlottenburg-Wilmersdorf - Hohenzollerndamm 31"],
+        kultur: ["Schloss Charlottenburg", "Kurfürstendamm"]
+    },
+    "Wedding": {
+        sozial: ["Sozialamt Mitte - Rathausstr. 1 (Außenstelle Wedding)", "Jobcenter Wedding - Müllerstr. 147"],
+        kinder: ["Familienzentrum Wedding - Luxemburger Str. 20"],
+        jugend: ["Jugendclub Wedding - Reinickendorfer Str. 55"],
+        seniors: ["Seniorenbüro Wedding - Müllerstr. 23"],
+        sprach: ["VHS Wedding - Müllerstr. 23", "SprachCafé Wedding - Osloer Str."],
+        arbeit: ["Arbeitsagentur Wedding - Müllerstr. 147"],
+        gesundheit: ["Gesundheitsamt Mitte - Wedding - Luxemburger Str. 20"],
+        kultur: ["Plötzensee", "Uferhallen"]
+    },
+    "Tempelhof": {
+        sozial: ["Sozialamt Tempelhof-Schöneberg - Rathausstr. 1", "Jobcenter Tempelhof - Tempelhofer Damm 228"],
+        kinder: ["Familienzentrum Tempelhof - Alt-Tempelhof 8"],
+        jugend: ["Jugendclub Tempelhof - Tempelhofer Damm 165"],
+        seniors: ["Seniorenzentrum Tempelhof - Manfred-von-Richthofen-Str. 14"],
+        sprach: ["VHS Tempelhof-Schöneberg - Barbarossastr. 65"],
+        arbeit: ["Arbeitsagentur Tempelhof - Tempelhofer Damm 228"],
+        gesundheit: ["Gesundheitsamt Tempelhof-Schöneberg - Rathausstr. 1"],
+        kultur: ["Tempelhofer Feld", "Luftbrückendenkmal"]
+    },
+    "Schöneberg": {
+        sozial: ["Sozialamt Tempelhof-Schöneberg - Rathausstr. 1", "Jobcenter Schöneberg - Hauptstr. 25"],
+        kinder: ["Familienzentrum Schöneberg - Belziger Str. 20"],
+        jugend: ["Jugendzentrum Schöneberg - Martin-Luther-Str. 109"],
+        seniors: ["Seniorenzentrum Schöneberg - Nürnberger Str. 63"],
+        sprach: ["VHS Schöneberg - Barbarossastr. 65", "Sprachschule am Nollendorfplatz"],
+        arbeit: ["Arbeitsagentur Schöneberg - Hauptstr. 25"],
+        gesundheit: ["Gesundheitsamt Tempelhof-Schöneberg - Rathausstr. 1"],
+        kultur: ["Winterfeldtplatz", "Schöneberg Rathaus"]
+    },
+    "Lichtenberg": {
+        sozial: ["Sozialamt Lichtenberg - Möllendorffstr. 6", "Jobcenter Lichtenberg - Rhinstraße 84"],
+        kinder: ["Familienzentrum Lichtenberg - Sewanstr. 43"],
+        jugend: ["Jugendzentrum Lichtenberg - Weitlingstr. 89"],
+        seniors: ["Seniorenbeirat Lichtenberg - Möllendorffstr. 6"],
+        sprach: ["VHS Lichtenberg - Paul-Junius-Str. 71"],
+        arbeit: ["Arbeitsagentur Lichtenberg - Rhinstraße 84"],
+        gesundheit: ["Gesundheitsamt Lichtenberg - Möllendorffstr. 6"],
+        kultur: ["Stasi-Museum", "Rummelsburger Bucht"]
+    }
+};
+
+var lang = "tr";
+var state = "lang";
+var selectedNeighborhood = "";
+var selectedInterests = [];
+var maxInterests = 3;
+
+function getView() { return document.getElementById("dynamicView"); }
+
+function detectLanguage() {
+    var userLang = navigator.language || navigator.userLanguage;
+    if (userLang.indexOf("tr") === 0) return "tr";
+    if (userLang.indexOf("de") === 0) return "de";
+    return "en";
+}
+
+function render() {
+    var v = getView();
+    if (!v) return;
+    if (state === "lang") renderLang(v);
+    else if (state === "neighborhood") renderNeighborhood(v);
+    else if (state === "interests") renderInterests(v);
+    else if (state === "result") renderResult(v);
+    window.scrollTo(0, 0);
+}
+
+function renderLang(v) {
+    var current = texts[lang];
+    var html = '<div class="lang-selector">' +
+        '<button class="lang-btn ' + (lang === 'tr' ? 'active' : '') + '" onclick="setLang(\'tr\')">🇹🇷 TÜRKÇE</button>' +
+        '<button class="lang-btn ' + (lang === 'de' ? 'active' : '') + '" onclick="setLang(\'de\')">🇩🇪 DEUTSCH</button>' +
+        '<button class="lang-btn ' + (lang === 'en' ? 'active' : '') + '" onclick="setLang(\'en\')">🇬🇧 ENGLISH</button>' +
+        '</div>' +
+        '<div class="start-card">' +
+        '<h2>🏘️ ' + current.title + '</h2>' +
+        '<p>' + current.desc + '</p>' +
+        '<button class="btn-primary" onclick="startNeighborhood()">' + current.start + '</button>' +
+        '</div>';
+    v.innerHTML = html;
+}
+
+function setLang(l) {
+    lang = l;
+    render();
+}
+
+function startNeighborhood() {
+    state = "neighborhood";
+    selectedNeighborhood = "";
+    render();
+}
+
+function renderNeighborhood(v) {
+    var current = texts[lang];
+    var neighborhoods = ["Mitte", "Kreuzberg", "Neukölln", "Prenzlauer Berg", "Friedrichshain", "Charlottenburg", "Wedding", "Tempelhof", "Schöneberg", "Lichtenberg"];
+    var optionsHtml = '<select id="neighborhoodSelect" class="select-input">';
+    for (var i = 0; i < neighborhoods.length; i++) {
+        optionsHtml += '<option value="' + neighborhoods[i] + '">' + neighborhoods[i] + '</option>';
+    }
+    optionsHtml += '</select>';
+    var html = '<div class="start-card">' +
+        '<h3>' + current.neighborhood_label + '</h3>' +
+        optionsHtml +
+        '<button class="btn-primary" onclick="saveNeighborhood()">' + current.next + '</button>' +
+        '</div>';
+    v.innerHTML = html;
+}
+
+function saveNeighborhood() {
+    var select = document.getElementById("neighborhoodSelect");
+    if (select) selectedNeighborhood = select.value;
+    if (selectedNeighborhood) {
+        state = "interests";
+        selectedInterests = [];
+        render();
+    }
+}
+
+function renderInterests(v) {
+    var current = texts[lang];
+    var interests = [
+        { id: "sozial", label: current.interests.sozial },
+        { id: "kinder", label: current.interests.kinder },
+        { id: "jugend", label: current.interests.jugend },
+        { id: "seniors", label: current.interests.seniors },
+        { id: "sprach", label: current.interests.sprach },
+        { id: "arbeit", label: current.interests.arbeit },
+        { id: "gesundheit", label: current.interests.gesundheit },
+        { id: "kultur", label: current.interests.kultur }
+    ];
+    var checkboxesHtml = '';
+    for (var i = 0; i < interests.length; i++) {
+        var isChecked = (selectedInterests.indexOf(interests[i].id) !== -1);
+        checkboxesHtml += '<div class="interest-check' + (isChecked ? ' selected' : '') + '" data-id="' + interests[i].id + '" onclick="toggleInterest(this)">' + interests[i].label + '</div>';
+    }
+    var html = '<div class="start-card">' +
+        '<h3>' + current.interests_label + '</h3>' +
+        '<div class="interests-group" id="interestsGroup">' + checkboxesHtml + '</div>' +
+        '<div id="interestWarning" class="warning"></div>' +
+        '<button class="btn-primary" onclick="finishInterests()">' + current.finish + '</button>' +
+        '<button class="btn-primary" style="margin-top:10px; background:#6c757d;" onclick="goBackNeighborhood()">' + current.back + '</button>' +
+        '</div>';
+    v.innerHTML = html;
+}
+
+function toggleInterest(el) {
+    var id = el.getAttribute("data-id");
+    var index = selectedInterests.indexOf(id);
+    if (index === -1) {
+        if (selectedInterests.length >= maxInterests) {
+            var warnDiv = document.getElementById("interestWarning");
+            if (warnDiv) warnDiv.textContent = texts[lang].interests_label.replace("(max 3)", "");
+            return;
+        }
+        selectedInterests.push(id);
+        el.classList.add("selected");
+    } else {
+        selectedInterests.splice(index, 1);
+        el.classList.remove("selected");
+    }
+    var warnDiv = document.getElementById("interestWarning");
+    if (warnDiv) warnDiv.textContent = "";
+}
+
+function finishInterests() {
+    if (selectedInterests.length === 0) {
+        var warnDiv = document.getElementById("interestWarning");
+        if (warnDiv) warnDiv.textContent = texts[lang].interests_label;
+        return;
+    }
+    state = "result";
+    render();
+}
+
+function goBackNeighborhood() {
+    state = "neighborhood";
+    render();
+}
+
+function renderResult(v) {
+    var current = texts[lang];
+    var neighborhoodKey = selectedNeighborhood;
+    var resourcesHtml = "";
+    for (var i = 0; i < selectedInterests.length; i++) {
+        var interest = selectedInterests[i];
+        var items = resourceData[neighborhoodKey] && resourceData[neighborhoodKey][interest];
+        if (items && items.length) {
+            for (var j = 0; j < items.length; j++) {
+                resourcesHtml += '<div class="resource-item"><strong>' + items[j] + '</strong><br><small>🔗 ' + (lang === "tr" ? "Website yakında" : (lang === "de" ? "Website bald" : "Website soon")) + '</small></div>';
+            }
+        } else {
+            resourcesHtml += '<div class="resource-item"><strong>' + (lang === "tr" ? "Yakında veriler" : (lang === "de" ? "Daten bald" : "Data soon")) + '</strong><br><small>' + (lang === "tr" ? "Bu ilgi alanı için kaynaklar yakında eklenecek." : (lang === "de" ? "Ressourcen für dieses Interesse werden bald hinzugefügt." : "Resources for this interest will be added soon.")) + '</small></div>';
+        }
+    }
+    if (resourcesHtml === "") {
+        resourcesHtml = '<p>' + (lang === "tr" ? "Henüz kayıtlı kaynak yok." : (lang === "de" ? "Noch keine Ressourcen." : "No resources yet.")) + '</p>';
+    }
+    var shareTextFull = current.share_text_prefix + selectedNeighborhood + current.share_text_suffix;
+    var waitlistHtml = '<div class="waitlist-container">' +
+        '<h4>📧 ' + current.waitlist_title + '</h4>' +
+        '<div class="waitlist-form">' +
+        '<input type="email" id="waitlist-email" class="waitlist-input" placeholder="' + current.waitlist_placeholder + '">' +
+        '<button class="btn-waitlist" onclick="submitWaitlist()">' + current.waitlist_button + '</button>' +
+        '</div>' +
+        '</div>';
+    var html = '<div class="result-card">' +
+        '<h3>' + current.results_title + ' — ' + selectedNeighborhood + '</h3>' +
+        resourcesHtml +
+        '<div class="disclaimer">' + current.realtime_note + '</div>' +
+        '</div>' +
+        '<div class="share-section">' +
+        '<p>📣 ' + current.recommend + '</p>' +
+        '<button class="btn-share" onclick="shareResult(\'' + shareTextFull.replace(/'/g, "\\'") + '\')">📢 ' + current.share_button + '</button>' +
+        '<div style="margin-top:12px">' +
+        '<a class="btn-feedback" href="mailto:info@kiezflow.de?subject=KiezFlow%20Feedback">📧 ' + current.feedback + '</a>' +
+        '</div>' +
+        '</div>' +
+        waitlistHtml +
+        '<div class="footer-note">' +
+        '🚀 ' + current.beta_note + '<br>' +
+        '© 2026 PACDI — kiezflow.de<br>' +
+        current.privacy_note +
+        '</div>';
+    v.innerHTML = html;
+}
+
+function shareResult(shareText) {
+    if (navigator.share) {
+        navigator.share({
+            title: "KiezFlow",
+            text: shareText,
+            url: window.location.href
+        });
+    } else {
+        navigator.clipboard.writeText(shareText + " " + window.location.href).then(function() {
+            alert(texts[lang].waitlist_success);
+        }).catch(function() {
+            alert(texts[lang].waitlist_error);
+        });
+    }
+}
+
+function submitWaitlist() {
+    var emailInput = document.getElementById("waitlist-email");
+    if (!emailInput) return;
+    var email = emailInput.value.trim();
+    if (!email || email.indexOf("@") === -1 || email.indexOf(".") === -1) {
+        alert(texts[lang].waitlist_error);
+        return;
+    }
+    var subject = encodeURIComponent("Waitlist: " + email);
+    var body = encodeURIComponent("I would like to join the KiezFlow waitlist.\nEmail: " + email);
+    window.location.href = "mailto:info@kiezflow.de?subject=" + subject + "&body=" + body;
+    alert(texts[lang].waitlist_success);
+    emailInput.value = "";
+}
+
+lang = detectLanguage();
+state = "lang";
+document.addEventListener("DOMContentLoaded", render);
+</script>
+</body>
+</html>
