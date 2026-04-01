@@ -249,7 +249,14 @@ var texts = {
         feedback: "Geri Bildirim Gönder",
         recommend: "Arkadaşlarına öner!",
         beta_note: "Yakında mobil uygulama",
-        privacy_note: "Veri gizliliği dostu · Kişisel veri saklanmaz"
+        privacy_note: "Veri gizliliği dostu · Kişisel veri saklanmaz",
+        // Did you know? translations
+        didyouknow_title: "💡 Berlin'i Biliyor musun?",
+        didyouknow_cards: [
+            { emoji: "🏘️", text: "Berlin'de 23 ilçe ve 96 farklı Kiez (mahalle) var. Her mahallenin kendine özgü hizmet ağı ve Bürgeramt'ı bulunur." },
+            { emoji: "🌍", text: "Berlin nüfusunun %35'i göçmen kökenli. Şehir 190'dan fazla dili konuşuyor." },
+            { emoji: "⚡", text: "Yeni gelenlerin çoğu ilk 6 ayda yanlış semtte oturduğunu fark ediyor. KiezFlow seni doğru yere yönlendirir." }
+        ]
     },
     de: {
         title: "Berliner Kiezführer",
@@ -284,7 +291,14 @@ var texts = {
         feedback: "Feedback senden",
         recommend: "Freunden empfehlen!",
         beta_note: "Bald als mobile App",
-        privacy_note: "Datenschutzfreundlich · Keine Speicherung personenbezogener Daten"
+        privacy_note: "Datenschutzfreundlich · Keine Speicherung personenbezogener Daten",
+        // Did you know? translations
+        didyouknow_title: "💡 Wusstest du schon?",
+        didyouknow_cards: [
+            { emoji: "🏘️", text: "Berlin hat 23 Bezirke und 96 verschiedene Kieze. Jeder Kiez hat sein eigenes Servicenetz und Bürgeramt." },
+            { emoji: "🌍", text: "35% der Berliner Bevölkerung hat Migrationshintergrund. Die Stadt spricht über 190 Sprachen." },
+            { emoji: "⚡", text: "Viele Neuankömmlinge stellen erst nach 6 Monaten fest, dass sie im falschen Kiez wohnen. KiezFlow hilft dir, den richtigen zu finden." }
+        ]
     },
     en: {
         title: "Berlin Neighborhood Guide",
@@ -319,7 +333,14 @@ var texts = {
         feedback: "Send Feedback",
         recommend: "Recommend to friends!",
         beta_note: "Mobile app coming soon",
-        privacy_note: "Privacy-friendly · No personal data stored"
+        privacy_note: "Privacy-friendly · No personal data stored",
+        // Did you know? translations
+        didyouknow_title: "💡 Did you know?",
+        didyouknow_cards: [
+            { emoji: "🏘️", text: "Berlin has 23 districts and 96 different neighborhoods (Kieze). Each has its own service network and local office." },
+            { emoji: "🌍", text: "35% of Berlin's population has a migration background. The city speaks over 190 languages." },
+            { emoji: "⚡", text: "Many newcomers realize only after 6 months that they live in the wrong neighborhood. KiezFlow helps you find the right one." }
+        ]
     }
 };
 
@@ -452,6 +473,7 @@ function render() {
     window.scrollTo(0, 0);
 }
 
+// renderLang function updated with "Did you know?" section
 function renderLang(v) {
     var current = texts[lang];
     var html = '<div class="lang-selector">' +
@@ -461,7 +483,20 @@ function renderLang(v) {
         '</div>' +
         '<div class="start-card">' +
         '<h2>🏘️ ' + current.title + '</h2>' +
-        '<p>' + current.desc + '</p>' +
+        '<p>' + current.desc + '</p>';
+    
+    // Add "Did you know?" section
+    var didyouknowHtml = '<div style="margin: 20px 0; display: flex; flex-direction: column; gap: 12px;">';
+    for (var i = 0; i < current.didyouknow_cards.length; i++) {
+        var card = current.didyouknow_cards[i];
+        didyouknowHtml += '<div style="background: #f8fafc; border-radius: 16px; padding: 16px; border-left: 4px solid #F6B45F; display: flex; gap: 12px; text-align: left;">' +
+            '<div style="font-size: 1.5rem;">' + card.emoji + '</div>' +
+            '<div style="font-size: 0.9rem; color: #1a2c3e; line-height: 1.5;">' + card.text + '</div>' +
+            '</div>';
+    }
+    didyouknowHtml += '</div>';
+    
+    html += didyouknowHtml +
         '<button class="btn-primary" onclick="startNeighborhood()">' + current.start + '</button>' +
         '</div>';
     v.innerHTML = html;
