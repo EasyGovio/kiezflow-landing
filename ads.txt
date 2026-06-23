@@ -1,1 +1,1 @@
-google.com/adsense/new, pub-8426936740213369, DIRECT, f08c47fec0942fa0
+google.com/adsense, ca-pub-8426936740213369, DIRECT, f08c47fec0942fa0
