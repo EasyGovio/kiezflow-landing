@@ -31,8 +31,8 @@ FSEK_FOOTER = """<div id="pacdi-fsek" style="text-align:center;padding:28px 16px
     <span style="font-size:1rem;">\U0001f6e1\ufe0f</span>
     <span style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;color:#D4AF37;text-transform:uppercase;">FSEK Registered \u00b7 PACDI Framework</span>
   </div>
-  <div style="font-size:0.78rem;color:#8A8F9A;margin-bottom:4px;">\u00a9 2026 PACDI Global Yaz\u0131l\u0131m Ltd. \u015eti.</div>
-  <div style="font-size:0.72rem;color:#6B7280;margin-bottom:10px;">Protected under FSEK Copyright Registration No: <a href="https://pacdi.eu" style="color:#D4AF37;text-decoration:none;">2026/18897</a></div>
+  <div style="font-size:0.78rem;color:#8A8F9A;margin-bottom:4px;">Operated by AskMeAI Teknoloji Ltd. \u015eti. (TR: 23837)</div>
+  <div style="font-size:0.72rem;color:#6B7280;margin-bottom:10px;">Intellectual property owned by \u00a9 2026 PACDI Global Yaz\u0131l\u0131m Ltd. \u015eti. &mdash; FSEK No: <a href="https://pacdi.eu/legal.html" style="color:#D4AF37;text-decoration:none;">2026/18897</a></div>
   <div style="font-size:0.82rem;font-style:italic;color:#6B7280;">&ldquo;Technology in the service of humanity.&rdquo;</div>
 </div>"""
 
