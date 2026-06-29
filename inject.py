@@ -247,6 +247,27 @@ for root, dirs, files in os.walk('.'):
                 body_end = content.find('>', content.find('<body')) + 1
                 content = content[:body_end] + '\n' + ASCII_MUHUR + '\n' + content[body_end:]
 
+            # ── Inline Impressum fix: PACDI Global → AskMeAI ──
+            if 'Verantwortlich: PACDI Global' in content:
+                content = content.replace(
+                    'Verantwortlich: PACDI Global',
+                    'Verantwortlicher: Mehmet Ayd\u0131nl\u0131 / AskMeAI Teknoloji Ltd. \u015eti.'
+                )
+                print('Fixed: inline impressum ->', fpath)
+
+            if 'Ein Service von PACDI Global' in content:
+                content = content.replace(
+                    'Ein Service von PACDI Global',
+                    'Ein Service von AskMeAI Teknoloji Ltd. \u015eti.'
+                )
+
+            # ── Body flex fix: FSEK footer yan kaymasın ──
+            if 'pacdi-fsek' in content and 'display:flex' in content:
+                content = content.replace(
+                    'id="pacdi-fsek" style="clear:both;width:100%;display:block;',
+                    'id="pacdi-fsek" style="clear:both;width:100%;flex-basis:100%;display:block;'
+                )
+
             # ── FSEK visible footer → </body> oncesi ──
             if 'pacdi-fsek' not in content and '</body>' in content and fname not in SKIP_FOOTER:
                 content = content.replace('</body>', FSEK_FOOTER + '\n</body>', 1)
