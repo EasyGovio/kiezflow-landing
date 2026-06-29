@@ -206,6 +206,50 @@ if domain != 'pacdi.store':
 else:
     print('Skipping legal.html for pacdi.store (has custom version)')
 
+# ── manifest.json otomatik oluştur ──
+import json
+manifest = {
+    "name": "PACDI — " + domain,
+    "short_name": "PACDI",
+    "description": "PACDI Digital — Technology in the service of humanity.",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#04162E",
+    "theme_color": "#04162E",
+    "orientation": "portrait",
+    "categories": ["business", "productivity", "utilities"],
+    "icons": [
+        {
+            "src": "https://cdn-icons-png.flaticon.com/512/6849/6849232.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "https://cdn-icons-png.flaticon.com/512/6849/6849232.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
+with open('manifest.json', 'w', encoding='utf-8') as f:
+    json.dump(manifest, f, ensure_ascii=False, indent=2)
+print('manifest.json created:', domain)
+
+# ── sw.js otomatik oluştur ──
+sw = "const CACHE_NAME = 'pacdi-v1';\n"
+sw += "const ASSETS = ['./'];\n"
+sw += "self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS))));\n"
+sw += "self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))));\n"
+sw += "self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => {\n"
+sw += "  if (r) { fetch(e.request).then(nr => { if(nr.status===200) caches.open(CACHE_NAME).then(c=>c.put(e.request,nr)); }).catch(()=>{}); return r; }\n"
+sw += "  return fetch(e.request);\n"
+sw += "})));\n"
+with open('sw.js', 'w', encoding='utf-8') as f:
+    f.write(sw)
+print('sw.js created:', domain)
+
 updated = 0
 for root, dirs, files in os.walk('.'):
     dirs[:] = [d for d in dirs if d not in ['.git','.github']]
@@ -247,6 +291,14 @@ for root, dirs, files in os.walk('.'):
                 body_end = content.find('>', content.find('<body')) + 1
                 content = content[:body_end] + '\n' + ASCII_MUHUR + '\n' + content[body_end:]
 
+            # ── FSEK footer eski versiyon güncelle ──
+            if 'pacdi-fsek' in content:
+                # Eski tek satırlı versiyon → yeni iki şirketli versiyon
+                content = content.replace(
+                    '<div style="font-size:0.78rem;color:#8A8F9A;margin-bottom:4px;">\u00a9 2026 PACDI Global Yaz\u0131l\u0131m Ltd. \u015eti.</div>\n  <div style="font-size:0.72rem;color:#6B7280;margin-bottom:10px;">Protected under FSEK Copyright Registration No: <a href="https://pacdi.eu" style="color:#D4AF37;text-decoration:none;">2026/18897</a></div>',
+                    '<div style="font-size:0.78rem;color:#8A8F9A;margin-bottom:4px;">Operated by AskMeAI Teknoloji Ltd. \u015eti. (TR: 23837)</div>\n  <div style="font-size:0.72rem;color:#6B7280;margin-bottom:10px;">Intellectual property owned by \u00a9 2026 PACDI Global Yaz\u0131l\u0131m Ltd. \u015eti. &mdash; FSEK No: <a href="https://pacdi.eu/legal.html" style="color:#D4AF37;text-decoration:none;">2026/18897</a></div>'
+                )
+
             # ── Inline Impressum fix: PACDI Global → AskMeAI ──
             if 'Verantwortlich: PACDI Global' in content:
                 content = content.replace(
@@ -263,9 +315,19 @@ for root, dirs, files in os.walk('.'):
 
             # ── Body flex fix: FSEK footer yan kaymasın ──
             if 'pacdi-fsek' in content and 'display:flex' in content:
+                # Yeni versiyon
                 content = content.replace(
                     'id="pacdi-fsek" style="clear:both;width:100%;display:block;',
                     'id="pacdi-fsek" style="clear:both;width:100%;flex-basis:100%;display:block;'
+                )
+                # Eski versiyon — padding ile başlayan
+                import re
+                content = re.sub(
+                    r'id="pacdi-fsek" style="([^"]*?)"',
+                    lambda m: 'id="pacdi-fsek" style="' + m.group(1) + '"' 
+                        if 'flex-basis' in m.group(1) or 'clear:both' in m.group(1)
+                        else 'id="pacdi-fsek" style="clear:both;width:100%;flex-basis:100%;' + m.group(1) + '"',
+                    content
                 )
 
             # ── FSEK visible footer → </body> oncesi ──
