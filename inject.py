@@ -34,64 +34,62 @@ PWA_HEAD = """    <link rel="manifest" href="/manifest.json">
 
 PWA_SCRIPT = """<script>
 (function() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js").catch(function(){});
   }
 
   var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  var isInStandalone = ('standalone' in navigator && navigator.standalone);
-  var shown = sessionStorage.getItem('pwa-banner-shown');
+  var isInStandalone = ("standalone" in navigator && navigator.standalone);
+  var shown = sessionStorage.getItem("pwa-banner-shown");
   if (shown || isInStandalone) return;
 
-  // iOS Safari — manuel yönlendirme
   if (isIOS) {
     setTimeout(function() {
-      var bar = document.createElement('div');
-      bar.id = 'pwa-banner';
-      bar.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#04162E;border-top:2px solid #F6B45F;padding:14px 16px;z-index:9999;font-family:system-ui;';
+      var bar = document.createElement("div");
+      bar.id = "pwa-banner";
+      bar.style.cssText = "position:fixed;bottom:0;left:0;right:0;background:#04162E;border-top:2px solid #F6B45F;padding:14px 16px;z-index:9999;font-family:system-ui;";
       bar.innerHTML =
-        '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">' +
-          '<div>' +
-            '<div style="color:#F6B45F;font-size:0.82rem;font-weight:700;margin-bottom:4px;">📲 Ana ekrana ekle</div>' +
-            '<div style="color:#b0b5bf;font-size:0.75rem;line-height:1.5;">' +
-              'Safari'de <strong style="color:#eaf2fb;">&#11015; Paylaş</strong> butonuna bas, ' +
-              'ardından <strong style="color:#eaf2fb;">Ana Ekrana Ekle</strong> seçeneğini seç.' +
-            '</div>' +
-            '<div style="color:#4a6a88;font-size:0.68rem;margin-top:4px;">&#9432; iOS'ta otomatik kurulum desteklenmiyor — bu adım gerekli.</div>' +
-          '</div>' +
-          '<button onclick="document.getElementById('pwa-banner').remove();sessionStorage.setItem('pwa-banner-shown','1')" ' +
-            'style="background:transparent;border:none;color:#7a9ab8;font-size:1.2rem;cursor:pointer;padding:0 4px;flex-shrink:0;">✕</button>' +
-        '</div>';
+        "<div style=\\"display:flex;justify-content:space-between;align-items:flex-start;gap:8px;\\">" +
+          "<div>" +
+            "<div style=\\"color:#F6B45F;font-size:0.82rem;font-weight:700;margin-bottom:4px;\\">&#128242; Ana ekrana ekle</div>" +
+            "<div style=\\"color:#b0b5bf;font-size:0.75rem;line-height:1.5;\\">" +
+              "Safari&#39;de <strong style=\\"color:#eaf2fb;\\">&#11015; Payla&#351;</strong> butonuna bas, " +
+              "ard&#305;ndan <strong style=\\"color:#eaf2fb;\\">Ana Ekrana Ekle</strong> se&#231;ene&#287;ini se&#231;." +
+            "</div>" +
+            "<div style=\\"color:#4a6a88;font-size:0.68rem;margin-top:4px;\\">&#9432; iOS&#39;ta otomatik kurulum desteklenmiyor &#8212; bu ad&#305;m gerekli.</div>" +
+          "</div>" +
+          "<button onclick=\\"this.parentNode.parentNode.remove();sessionStorage.setItem(&#39;pwa-banner-shown&#39;,&#39;1&#39;)\\" " +
+            "style=\\"background:transparent;border:none;color:#7a9ab8;font-size:1.2rem;cursor:pointer;padding:0 4px;flex-shrink:0;\\">&#10005;</button>" +
+        "</div>";
       document.body.appendChild(bar);
-      sessionStorage.setItem('pwa-banner-shown', '1');
+      sessionStorage.setItem("pwa-banner-shown", "1");
     }, 3000);
     return;
   }
 
-  // Android / Desktop Chrome — otomatik install prompt
   var deferredPrompt = null;
-  window.addEventListener('beforeinstallprompt', function(e) {
+  window.addEventListener("beforeinstallprompt", function(e) {
     e.preventDefault();
     deferredPrompt = e;
     setTimeout(function() {
       if (!deferredPrompt) return;
-      var bar = document.createElement('div');
-      bar.id = 'pwa-banner';
-      bar.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#04162E;border-top:2px solid #F6B45F;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;z-index:9999;font-family:system-ui;';
+      var bar = document.createElement("div");
+      bar.id = "pwa-banner";
+      bar.style.cssText = "position:fixed;bottom:0;left:0;right:0;background:#04162E;border-top:2px solid #F6B45F;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;z-index:9999;font-family:system-ui;";
       bar.innerHTML =
-        '<span style="color:#eaf2fb;font-size:0.85rem;">📲 Ana ekrana ekle &mdash; daha hızlı aç!</span>' +
-        '<div style="display:flex;gap:8px;">' +
-          '<button onclick="installPWA()" style="background:#F6B45F;border:none;color:#04162E;padding:6px 16px;border-radius:20px;font-weight:700;cursor:pointer;font-size:0.82rem;">Ekle</button>' +
-          '<button onclick="document.getElementById(\'pwa-banner\').remove();sessionStorage.setItem(\'pwa-banner-shown\',\'1\')" style="background:transparent;border:1px solid rgba(246,180,95,0.3);color:#7a9ab8;padding:6px 12px;border-radius:20px;cursor:pointer;font-size:0.82rem;">Sonra</button>' +
-        '</div>';
+        "<span style=\\"color:#eaf2fb;font-size:0.85rem;\\">&#128242; Ana ekrana ekle &mdash; daha h&#305;zl&#305; a&#231;!</span>" +
+        "<div style=\\"display:flex;gap:8px;\\">" +
+          "<button onclick=\\"installPWA()\\" style=\\"background:#F6B45F;border:none;color:#04162E;padding:6px 16px;border-radius:20px;font-weight:700;cursor:pointer;font-size:0.82rem;\\">Ekle</button>" +
+          "<button onclick=\\"this.closest(&#39;#pwa-banner&#39;).remove();sessionStorage.setItem(&#39;pwa-banner-shown&#39;,&#39;1&#39;)\\" style=\\"background:transparent;border:1px solid rgba(246,180,95,0.3);color:#7a9ab8;padding:6px 12px;border-radius:20px;cursor:pointer;font-size:0.82rem;\\">Sonra</button>" +
+        "</div>";
       document.body.appendChild(bar);
     }, 3000);
   });
 
   window.installPWA = function() {
     if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(function(){ deferredPrompt=null; }); }
-    var b = document.getElementById('pwa-banner'); if (b) b.remove();
-    sessionStorage.setItem('pwa-banner-shown', '1');
+    var b = document.getElementById("pwa-banner"); if (b) b.remove();
+    sessionStorage.setItem("pwa-banner-shown", "1");
   };
 })();
 </script>
@@ -313,6 +311,18 @@ for root, dirs, files in os.walk('.'):
                     'Ein Service von AskMeAI Teknoloji Ltd. \u015eti.'
                 )
 
+            # ── Body flex fix: mevcut FSEK yanlış yerdeyse düzelt ──
+            import re as _re2
+            if 'pacdi-fsek' in content:
+                body_flex2 = _re2.search(r'body\s*\{[^}]*display\s*:\s*flex', content)
+                if body_flex2 and 'flex-direction:column' not in content:
+                    # body'ye flex-direction:column ekle
+                    content = _re2.sub(
+                        r'(body\s*\{[^}]*)(display\s*:\s*flex)',
+                        r'\1flex-direction:column;\2',
+                        content, count=1
+                    )
+
             # ── Body flex fix: FSEK footer yan kaymasın ──
             if 'pacdi-fsek' in content and 'display:flex' in content:
                 # Yeni versiyon
@@ -330,9 +340,20 @@ for root, dirs, files in os.walk('.'):
                     content
                 )
 
-            # ── FSEK visible footer → </body> oncesi ──
+            # ── FSEK visible footer ──
             if 'pacdi-fsek' not in content and '</body>' in content and fname not in SKIP_FOOTER:
-                content = content.replace('</body>', FSEK_FOOTER + '\n</body>', 1)
+                # Body display:flex varsa son </div> öncesine ekle (layout fix)
+                import re as _re
+                body_flex = _re.search(r'body\s*\{[^}]*display\s*:\s*flex', content)
+                if body_flex:
+                    # Son </div> + </body> pattern'ı bul
+                    last_div = content.rfind('</div>')
+                    if last_div > 0:
+                        content = content[:last_div] + FSEK_FOOTER + '\n' + content[last_div:]
+                    else:
+                        content = content.replace('</body>', FSEK_FOOTER + '\n</body>', 1)
+                else:
+                    content = content.replace('</body>', FSEK_FOOTER + '\n</body>', 1)
 
             if content != orig:
                 with open(fpath, 'w', encoding='utf-8') as f:
