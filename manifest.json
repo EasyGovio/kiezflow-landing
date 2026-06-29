@@ -1,0 +1,29 @@
+{
+  "name": "PACDI — kiezflow.de",
+  "short_name": "PACDI",
+  "description": "PACDI Digital — Technology in the service of humanity.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#04162E",
+  "theme_color": "#04162E",
+  "orientation": "portrait",
+  "categories": [
+    "business",
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/6849/6849232.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/6849/6849232.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
