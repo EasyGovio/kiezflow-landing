@@ -210,6 +210,15 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="PACDI">
+    <script>
+(function(){
+  if (sessionStorage.getItem('autoLang')) return;
+  var bl = (navigator.language || navigator.userLanguage || 'en').substring(0,2).toLowerCase();
+  var supported = ['tr','de','en'];
+  var lang = supported.indexOf(bl) > -1 ? bl : 'en';
+  sessionStorage.setItem('autoLang', lang);
+})();
+</script>
 </head>
 <body>
 <!--
