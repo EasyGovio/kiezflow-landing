@@ -32,6 +32,17 @@ PWA_HEAD = """    <link rel="manifest" href="/manifest.json">
     <meta name="apple-mobile-web-app-title" content="PACDI">
 """
 
+LANG_DETECT_SCRIPT = """<script>
+(function(){
+  if (sessionStorage.getItem('autoLang')) return;
+  var bl = (navigator.language || navigator.userLanguage || 'en').substring(0,2).toLowerCase();
+  var supported = ['tr','de','en'];
+  var lang = supported.indexOf(bl) > -1 ? bl : 'en';
+  sessionStorage.setItem('autoLang', lang);
+})();
+</script>
+"""
+
 PWA_SCRIPT = """<script>
 (function() {
   if ('serviceWorker' in navigator) {
@@ -53,14 +64,10 @@ PWA_SCRIPT = """<script>
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">' +
           '<div>' +
             '<div style="color:#F6B45F;font-size:0.82rem;font-weight:700;margin-bottom:4px;">📲 Ana ekrana ekle</div>' +
-            '<div style="color:#b0b5bf;font-size:0.75rem;line-height:1.5;">' +
-              'Safari'de <strong style="color:#eaf2fb;">&#11015; Paylaş</strong> butonuna bas, ' +
-              'ardından <strong style="color:#eaf2fb;">Ana Ekrana Ekle</strong> seçeneğini seç.' +
-            '</div>' +
-            '<div style="color:#4a6a88;font-size:0.68rem;margin-top:4px;">&#9432; iOS'ta otomatik kurulum desteklenmiyor — bu adım gerekli.</div>' +
+            '<div style="color:#b0b5bf;font-size:0.75rem;line-height:1.5;">Safari&#39;de <strong style="color:#eaf2fb;">&#11015; Paylaş</strong> butonuna bas, ardından <strong style="color:#eaf2fb;">Ana Ekrana Ekle</strong> seçeneğini seç.</div>' +
+            '<div style="color:#4a6a88;font-size:0.68rem;margin-top:4px;">&#9432; iOS&#39;ta otomatik kurulum desteklenmiyor — bu adım gerekli.</div>' +
           '</div>' +
-          '<button onclick="document.getElementById('pwa-banner').remove();sessionStorage.setItem('pwa-banner-shown','1')" ' +
-            'style="background:transparent;border:none;color:#7a9ab8;font-size:1.2rem;cursor:pointer;padding:0 4px;flex-shrink:0;">✕</button>' +
+          '<button onclick="document.getElementById(&#39;pwa-banner&#39;).remove();sessionStorage.setItem(&#39;pwa-banner-shown&#39;,&#39;1&#39;)" style="background:transparent;border:none;color:#7a9ab8;font-size:1.2rem;cursor:pointer;padding:0 4px;flex-shrink:0;">✕</button>' +
         '</div>';
       document.body.appendChild(bar);
       sessionStorage.setItem('pwa-banner-shown', '1');
@@ -82,7 +89,7 @@ PWA_SCRIPT = """<script>
         '<span style="color:#eaf2fb;font-size:0.85rem;">📲 Ana ekrana ekle &mdash; daha hızlı aç!</span>' +
         '<div style="display:flex;gap:8px;">' +
           '<button onclick="installPWA()" style="background:#F6B45F;border:none;color:#04162E;padding:6px 16px;border-radius:20px;font-weight:700;cursor:pointer;font-size:0.82rem;">Ekle</button>' +
-          '<button onclick="document.getElementById(\'pwa-banner\').remove();sessionStorage.setItem(\'pwa-banner-shown\',\'1\')" style="background:transparent;border:1px solid rgba(246,180,95,0.3);color:#7a9ab8;padding:6px 12px;border-radius:20px;cursor:pointer;font-size:0.82rem;">Sonra</button>' +
+          '<button onclick="document.getElementById(&#39;pwa-banner&#39;).remove();sessionStorage.setItem(&#39;pwa-banner-shown&#39;,&#39;1&#39;)" style="background:transparent;border:1px solid rgba(246,180,95,0.3);color:#7a9ab8;padding:6px 12px;border-radius:20px;cursor:pointer;font-size:0.82rem;">Sonra</button>' +
         '</div>';
       document.body.appendChild(bar);
     }, 3000);
@@ -195,6 +202,12 @@ LEGAL_HTML = '''<!DOCTYPE html>
 SKIP = ['legal.html','impressum.html','datenschutz.html','404.html','master-template.html','test.html']
 SKIP_FOOTER = ['legal.html','impressum.html','datenschutz.html','404.html','master-template.html','test.html']
 
+# ── Kişisel/özel dosyalar — inject ve FSEK footer eklenmez, AdSense/Analytics eklenmez ──
+PRIVATE_PREFIXES = ('mein-', 'private-', 'pacdi-sunum', 'personal-', 'intern-')
+
+def is_private(filename):
+    return any(filename.startswith(p) for p in PRIVATE_PREFIXES)
+
 # ── Write standard legal.html (skip if pacdi.store) ──
 if domain != 'pacdi.store':
     legal_content = LEGAL_HTML.format()
@@ -261,6 +274,9 @@ for root, dirs, files in os.walk('.'):
     for fname in files:
         if not fname.endswith('.html') or fname.startswith('google4d'):
             continue
+        if is_private(fname):
+            print('Skipped (private):', fname)
+            continue
         fpath = os.path.join(root, fname)
         try:
             with open(fpath, 'r', encoding='utf-8', errors='ignore') as f:
@@ -284,6 +300,8 @@ for root, dirs, files in os.walk('.'):
                 insert += '    <link rel="canonical" href="' + url + '" />\n'
             if 'manifest.json' not in content and fname not in SKIP:
                 insert += PWA_HEAD
+            if 'autoLang' not in content and fname not in SKIP:
+                insert += '    ' + LANG_DETECT_SCRIPT
             if insert:
                 content = content.replace('</head>', insert + '</head>', 1)
 
