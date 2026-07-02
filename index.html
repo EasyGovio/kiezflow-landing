@@ -744,14 +744,10 @@ document.addEventListener("DOMContentLoaded", render);
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">' +
           '<div>' +
             '<div style="color:#F6B45F;font-size:0.82rem;font-weight:700;margin-bottom:4px;">📲 Ana ekrana ekle</div>' +
-            '<div style="color:#b0b5bf;font-size:0.75rem;line-height:1.5;">' +
-              'Safari'de <strong style="color:#eaf2fb;">&#11015; Paylaş</strong> butonuna bas, ' +
-              'ardından <strong style="color:#eaf2fb;">Ana Ekrana Ekle</strong> seçeneğini seç.' +
-            '</div>' +
-            '<div style="color:#4a6a88;font-size:0.68rem;margin-top:4px;">&#9432; iOS'ta otomatik kurulum desteklenmiyor — bu adım gerekli.</div>' +
+            '<div style="color:#b0b5bf;font-size:0.75rem;line-height:1.5;">Safari&#39;de <strong style="color:#eaf2fb;">&#11015; Paylaş</strong> butonuna bas, ardından <strong style="color:#eaf2fb;">Ana Ekrana Ekle</strong> seçeneğini seç.</div>' +
+            '<div style="color:#4a6a88;font-size:0.68rem;margin-top:4px;">&#9432; iOS&#39;ta otomatik kurulum desteklenmiyor — bu adım gerekli.</div>' +
           '</div>' +
-          '<button onclick="document.getElementById('pwa-banner').remove();sessionStorage.setItem('pwa-banner-shown','1')" ' +
-            'style="background:transparent;border:none;color:#7a9ab8;font-size:1.2rem;cursor:pointer;padding:0 4px;flex-shrink:0;">✕</button>' +
+          '<button onclick="document.getElementById(&#39;pwa-banner&#39;).remove();sessionStorage.setItem(&#39;pwa-banner-shown&#39;,&#39;1&#39;)" style="background:transparent;border:none;color:#7a9ab8;font-size:1.2rem;cursor:pointer;padding:0 4px;flex-shrink:0;">✕</button>' +
         '</div>';
       document.body.appendChild(bar);
       sessionStorage.setItem('pwa-banner-shown', '1');
@@ -773,7 +769,7 @@ document.addEventListener("DOMContentLoaded", render);
         '<span style="color:#eaf2fb;font-size:0.85rem;">📲 Ana ekrana ekle &mdash; daha hızlı aç!</span>' +
         '<div style="display:flex;gap:8px;">' +
           '<button onclick="installPWA()" style="background:#F6B45F;border:none;color:#04162E;padding:6px 16px;border-radius:20px;font-weight:700;cursor:pointer;font-size:0.82rem;">Ekle</button>' +
-          '<button onclick="document.getElementById('pwa-banner').remove();sessionStorage.setItem('pwa-banner-shown','1')" style="background:transparent;border:1px solid rgba(246,180,95,0.3);color:#7a9ab8;padding:6px 12px;border-radius:20px;cursor:pointer;font-size:0.82rem;">Sonra</button>' +
+          '<button onclick="document.getElementById(&#39;pwa-banner&#39;).remove();sessionStorage.setItem(&#39;pwa-banner-shown&#39;,&#39;1&#39;)" style="background:transparent;border:1px solid rgba(246,180,95,0.3);color:#7a9ab8;padding:6px 12px;border-radius:20px;cursor:pointer;font-size:0.82rem;">Sonra</button>' +
         '</div>';
       document.body.appendChild(bar);
     }, 3000);
