@@ -309,6 +309,28 @@ for root, dirs, files in os.walk('.'):
             if 'serviceWorker' not in content and '</body>' in content and fname not in SKIP_FOOTER:
                 content = content.replace('</body>', PWA_SCRIPT + '\n</body>', 1)
 
+            # ── PWA Script eski (bozuk) versiyon güncelle ──
+            # Eski enjeksiyonlarda apostrof (Safari'de, iOS'ta, onclick içindeki
+            # iç içe tek tırnaklar) HTML entity ile escape edilmemişti; bu da
+            # tarayıcıda JS string'inin kırılmasına (SyntaxError) ve banner'ın
+            # hiç çalışmamasına yol açıyordu. 'serviceWorker' zaten var olduğu
+            # için üstteki blok bu dosyalara asla dokunmuyordu — burada eski
+            # (bozuk) imzayı tanıyıp PWA_SCRIPT'in güncel/düzeltilmiş haliyle
+            # değiştiriyoruz, böylece bir daha hiç sıkışmıyor.
+            if 'pwa-banner' in content and (
+                "Safari'de" in content or
+                "iOS'ta otomatik" in content or
+                "getElementById('pwa-banner').remove()" in content
+            ):
+                import re as _re3
+                _pwa_block_re = _re3.compile(
+                    r'<script>\s*\(function\(\)\s*\{\s*if \(\'serviceWorker\' in navigator\).*?\}\)\(\);\s*</script>',
+                    _re3.S
+                )
+                if _pwa_block_re.search(content):
+                    content = _pwa_block_re.sub(PWA_SCRIPT.strip(), content, count=1)
+                    print('Fixed: stale/broken PWA banner ->', fpath)
+
             # ── ASCII muhur → <body> sonrasi ──
             if 'PACDI FRAMEWORK' not in content and '<body' in content:
                 body_end = content.find('>', content.find('<body')) + 1
