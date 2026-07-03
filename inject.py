@@ -10,6 +10,50 @@ print("Domain:", domain)
 ANALYTICS = '<script async src="https://www.googletagmanager.com/gtag/js?id=G-E6ML8EDW0H"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-E6ML8EDW0H");</script>'
 ADSENSE = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8426936740213369" crossorigin="anonymous"></script>'
 
+LICENSE_TEMPLATE = """Copyright (c) 2026 PACDI Global Yazılım Ltd. Şti.
+Tüm hakları saklıdır. / All rights reserved.
+
+Bu yazılım kütüphanesi ve modüler mimarisi, PACDI Software Library
+kapsamında FSEK (5846 Sayılı Fikir ve Sanat Eserleri Kanunu) tescili
+ile korunmaktadır.
+
+FSEK Tescil No: 2026/18897
+Ticaret Sicil No: 23836 — PACDI Global Yazılım Ltd. Şti., Yunusemre/Manisa, Türkiye
+
+Bu deponun (repository) içeriği, sahibinin açık yazılı izni olmaksızın
+kopyalanamaz, çoğaltılamaz, değiştirilemez, dağıtılamaz, alt lisanslanamaz
+veya ticari ya da ticari olmayan herhangi bir amaçla kullanılamaz.
+
+İzinsiz kullanım, kopyalama veya dağıtım FSEK ve ilgili mevzuat
+kapsamında hukuki işleme tabidir.
+
+Bu depo sadece görüntüleme ve inceleme amacıyla herkese açıktır;
+kaynak kodun kullanım hakkını vermez.
+
+---
+
+Copyright (c) 2026 PACDI Global Yazılım Ltd. Şti.
+All rights reserved.
+
+This software library and its modular architecture are protected under
+Turkish copyright law (FSEK — Law No. 5846 on Intellectual and Artistic
+Works) registration.
+
+FSEK Registration No: 2026/18897
+Trade Registry No: 23836 — PACDI Global Yazılım Ltd. Şti., Yunusemre/Manisa, Turkey
+
+No part of this repository's contents may be copied, reproduced,
+modified, distributed, sublicensed, or used for any commercial or
+non-commercial purpose without the express written permission of the
+copyright holder.
+
+Unauthorized use, copying, or distribution is subject to legal action
+under FSEK and applicable law.
+
+This repository is public for viewing and review purposes only and
+does not grant any rights to use the source code.
+"""
+
 ASCII_MUHUR = """<!--
 \u256c\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u256e
 \u2551         \U0001f6e1\ufe0f  PACDI FRAMEWORK \u2014 PROTECTED WORK                  \u2551
@@ -280,6 +324,20 @@ print('sw.js created:', domain)
 with open('ads.txt', 'w', encoding='utf-8') as f:
     f.write('google.com, pub-8426936740213369, DIRECT, f08c47fec0942fa0\n')
 print('ads.txt created:', domain)
+
+# ── LICENSE kontrol/onar ──
+# Eksikse oluştur; yanlışlıkla MIT gibi izin verici bir lisans konmuşsa
+# doğru FSEK tabanlı, tüm hakları saklı bildirimle değiştir.
+_license_needs_write = True
+if os.path.exists('LICENSE'):
+    with open('LICENSE', encoding='utf-8', errors='ignore') as f:
+        _existing_license = f.read()
+    if 'FSEK' in _existing_license and '2026/18897' in _existing_license:
+        _license_needs_write = False  # zaten doğru
+if _license_needs_write:
+    with open('LICENSE', 'w', encoding='utf-8') as f:
+        f.write(LICENSE_TEMPLATE)
+    print('LICENSE oluşturuldu/düzeltildi (FSEK):', domain)
 
 updated = 0
 for root, dirs, files in os.walk('.'):

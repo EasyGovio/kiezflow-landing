@@ -1,21 +1,42 @@
-MIT License
+Copyright (c) 2026 PACDI Global Yazılım Ltd. Şti.
+Tüm hakları saklıdır. / All rights reserved.
 
-Copyright (c) 2026 PACDI
+Bu yazılım kütüphanesi ve modüler mimarisi, PACDI Software Library
+kapsamında FSEK (5846 Sayılı Fikir ve Sanat Eserleri Kanunu) tescili
+ile korunmaktadır.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+FSEK Tescil No: 2026/18897
+Ticaret Sicil No: 23836 — PACDI Global Yazılım Ltd. Şti., Yunusemre/Manisa, Türkiye
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Bu deponun (repository) içeriği, sahibinin açık yazılı izni olmaksızın
+kopyalanamaz, çoğaltılamaz, değiştirilemez, dağıtılamaz, alt lisanslanamaz
+veya ticari ya da ticari olmayan herhangi bir amaçla kullanılamaz.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+İzinsiz kullanım, kopyalama veya dağıtım FSEK ve ilgili mevzuat
+kapsamında hukuki işleme tabidir.
+
+Bu depo sadece görüntüleme ve inceleme amacıyla herkese açıktır;
+kaynak kodun kullanım hakkını vermez.
+
+---
+
+Copyright (c) 2026 PACDI Global Yazılım Ltd. Şti.
+All rights reserved.
+
+This software library and its modular architecture are protected under
+Turkish copyright law (FSEK — Law No. 5846 on Intellectual and Artistic
+Works) registration.
+
+FSEK Registration No: 2026/18897
+Trade Registry No: 23836 — PACDI Global Yazılım Ltd. Şti., Yunusemre/Manisa, Turkey
+
+No part of this repository's contents may be copied, reproduced,
+modified, distributed, sublicensed, or used for any commercial or
+non-commercial purpose without the express written permission of the
+copyright holder.
+
+Unauthorized use, copying, or distribution is subject to legal action
+under FSEK and applicable law.
+
+This repository is public for viewing and review purposes only and
+does not grant any rights to use the source code.
