@@ -1,4 +1,51 @@
-import os, sys
+import os, sys, re
+
+# ══════════════════════════════════════════════════════════════════
+# PACDI ÇOK DİLLİLİK STANDARDI — Temmuz 2026'dan itibaren zorunlu
+# ══════════════════════════════════════════════════════════════════
+# Çok dilli bir sayfa yazılırken TEK doğru kalıp:
+#
+#   <div data-lang="de">...Almanca içerik...</div>
+#   <div data-lang="tr">...Türkçe içerik...</div>
+#   (satır içi metinler için: <span data-lang-inline="de">...</span>)
+#
+#   Dil değiştirme butonları <div class="lang-bar"> içinde olmalı.
+#   JS SADECE .style.display ile blokları gösterip gizlemeli;
+#   ASLA .innerText / .innerHTML ile metin YAZMAMALI — bu, içeriği
+#   Google'a görünmez kılar (bkz. Temmuz 2026 SEO denetimi: grundrente.io
+#   ve türevleri bu yüzden aylarca indexlenmedi).
+#
+#   Neden: data-lang bloklarının ikisi de ham HTML'de gerçekten var
+#   olur, JS sadece görünürlüğü değiştirir — Google her iki dili de
+#   kaynak kodda görür. innerText/innerHTML ile JS-obje swap'inde ise
+#   ikinci dil hiçbir zaman HTML kaynağında yer almaz, sadece tarayıcı
+#   çalışırken üretilir — Google bunu görmez.
+#
+#   Bu standarda uymayan sayfalar aşağıdaki lint tarafından otomatik
+#   tespit edilip konsola uyarı olarak basılır (dosya OTOMATIK
+#   DÜZELTİLMEZ — batch_split_lang.py ile elle/yarı-otomatik taşınması
+#   gerekir).
+# ══════════════════════════════════════════════════════════════════
+
+_NONCOMPLIANT_MARKERS = [
+    (re.compile(r'\.innerText\s*=\s*t\.'),
+     "JS obje (L[lang]) ile innerText swap — SEO görünmezliği riski"),
+    (re.compile(r'\.innerHTML\s*=\s*t\.'),
+     "JS obje (L[lang]) ile innerHTML swap — SEO görünmezliği riski"),
+    (re.compile(r'var\s+L\s*=\s*\{'),
+     "Dil objesi (var L = {...}) tespit edildi — data-lang bloklarına taşınmalı"),
+]
+
+_lint_hits = []
+
+def lint_multilingual(fpath, content):
+    """Standart dışı çok dillilik kalıplarını tespit eder, dosyayı değiştirmez."""
+    if 'data-lang=' in content or 'data-i18n=' in content:
+        return  # zaten standart (veya standarda yakın) bir kalıp kullanıyor
+    for pattern, reason in _NONCOMPLIANT_MARKERS:
+        if pattern.search(content):
+            _lint_hits.append((fpath, reason))
+            break
 
 domain = "example.com"
 if os.path.exists("CNAME"):
@@ -352,6 +399,7 @@ for root, dirs, files in os.walk('.'):
         try:
             with open(fpath, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
+            lint_multilingual(fpath, content)
             if '</head>' not in content:
                 continue
             orig = content
@@ -484,3 +532,13 @@ for root, dirs, files in os.walk('.'):
             print('Error:', fpath, str(e))
 
 print('Total updated:', updated)
+
+if _lint_hits:
+    print()
+    print('⚠️  ÇOK DİLLİLİK STANDART DIŞI SAYFALAR (' + str(len(_lint_hits)) + '):')
+    for fpath, reason in _lint_hits:
+        print('   -', fpath, '—', reason)
+    print('   → Bu sayfalar batch_split_lang.py ile gerçek ayrı dil')
+    print('     sayfalarına taşınmalı (bkz. PACDI çok dillilik standardı).')
+else:
+    print('✓ Çok dillilik standardı: tüm sayfalar uyumlu (ya da tek dilli).')
