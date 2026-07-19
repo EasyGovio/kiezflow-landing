@@ -230,6 +230,60 @@
   };
 })();
 </script>
+    <style>
+    .pacdi-share-bar{margin-top:24px;padding:16px;background:rgba(246,180,95,0.05);border:1px solid rgba(246,180,95,0.15);border-radius:10px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;box-sizing:border-box;}
+    .pacdi-share-label{font-size:0.8rem;color:#7a9ab8;margin-bottom:10px;font-weight:600;}
+    .pacdi-share-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+    .pacdi-share-btn{display:inline-flex;align-items:center;gap:4px;font-size:0.78rem;padding:7px 14px;border-radius:20px;border:1px solid rgba(246,180,95,0.3);background:transparent;color:#F6B45F;text-decoration:none;cursor:pointer;font-family:inherit;}
+    .pacdi-share-btn:hover{background:rgba(246,180,95,0.1);}
+    </style>
+    <style>
+    [data-theme="dark"]:not([data-pacdi-native-theme]) { filter: invert(1) hue-rotate(180deg); background: #fff; }
+    [data-theme="dark"]:not([data-pacdi-native-theme]) img,
+    [data-theme="dark"]:not([data-pacdi-native-theme]) svg,
+    [data-theme="dark"]:not([data-pacdi-native-theme]) video,
+    [data-theme="dark"]:not([data-pacdi-native-theme]) picture,
+    [data-theme="dark"]:not([data-pacdi-native-theme]) iframe { filter: invert(1) hue-rotate(180deg); }
+    .pacdi-theme-toggle { position: fixed; top: 10px; right: 10px; z-index: 99999; width: 2.1rem; height: 2.1rem;
+      border: none; border-radius: 50%; background: rgba(0,0,0,0.08); font-size: 1.05rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .pacdi-theme-toggle:hover { background: rgba(0,0,0,0.16); }
+    </style>
+    <script>
+(function(){
+  var KEY = 'pacdi-theme';
+  function apply(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    var btn = document.getElementById('pacdiThemeToggle');
+    if (btn) btn.textContent = theme === 'dark' ? '\u2600\uFE0F' : '\uD83C\uDF19';
+  }
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch(e) {}
+  var preferred = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  apply(saved || preferred);
+  function addBtn() {
+    if (document.getElementById('pacdiThemeToggle')) return;
+    var btn = document.createElement('button');
+    btn.id = 'pacdiThemeToggle';
+    btn.className = 'pacdi-theme-toggle';
+    btn.setAttribute('aria-label', 'Koyu/Acik mod');
+    btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '\u2600\uFE0F' : '\uD83C\uDF19';
+    btn.onclick = function() {
+      var cur = document.documentElement.getAttribute('data-theme');
+      var next = cur === 'dark' ? 'light' : 'dark';
+      try { localStorage.setItem(KEY, next); } catch(e) {}
+      apply(next);
+    };
+    document.body.appendChild(btn);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addBtn);
+  } else {
+    addBtn();
+  }
+})();
+</script>
+    <style>#userPanel .btn-sm { background: transparent !important; color: var(--gold) !important; border: 1px solid var(--gold) !important; } #userPanel .btn-sm:hover { background: rgba(246,180,95,0.1) !important; }</style>
 </head>
 <body>
 <!--
@@ -725,6 +779,45 @@ lang = detectLanguage();
 state = "lang";
 document.addEventListener("DOMContentLoaded", render);
 </script>
+<div class="pacdi-share-bar" id="pacdiShareBar" style="clear:both;width:100%;flex-basis:100%;"></div>
+<script>
+(function(){
+  var pageTitle = (document.title.split('|')[0] || document.title).trim();
+  var pageUrl = window.location.href;
+  var shareText = 'Bu ' + pageTitle + ' aracını faydalı buldum, senin de işine yarayabilir:';
+
+  var bar = document.getElementById('pacdiShareBar');
+  if (!bar) return;
+  bar.innerHTML =
+    '<div class="pacdi-share-label">🔗 Bu aracı paylaş</div>' +
+    '<div class="pacdi-share-btns">' +
+      '<button class="pacdi-share-btn" id="pacdiShareNative" style="display:none;">📤 Paylaş</button>' +
+      '<a class="pacdi-share-btn" target="_blank" rel="noopener" href="https://api.whatsapp.com/send?text=' + encodeURIComponent(shareText + ' ' + pageUrl) + '">💬 WhatsApp</a>' +
+      '<a class="pacdi-share-btn" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(pageUrl) + '">𝕏</a>' +
+      '<a class="pacdi-share-btn" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(pageUrl) + '">Facebook</a>' +
+      '<a class="pacdi-share-btn" target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(pageUrl) + '">LinkedIn</a>' +
+      '<button class="pacdi-share-btn" id="pacdiShareCopy">🔗 Kopyala</button>' +
+    '</div>';
+
+  if (navigator.share) {
+    var nativeBtn = document.getElementById('pacdiShareNative');
+    nativeBtn.style.display = 'inline-flex';
+    nativeBtn.onclick = function(){
+      navigator.share({ title: pageTitle, text: shareText, url: pageUrl }).catch(function(){});
+    };
+  }
+
+  var copyBtn = document.getElementById('pacdiShareCopy');
+  copyBtn.onclick = function(){
+    navigator.clipboard.writeText(pageUrl).then(function(){
+      var old = copyBtn.textContent;
+      copyBtn.textContent = '✓ Kopyalandı!';
+      setTimeout(function(){ copyBtn.textContent = old; }, 2000);
+    }).catch(function(){});
+  };
+})();
+</script>
+
 <div id="pacdi-fsek" style="clear:both;width:100%;flex-basis:100%;text-align:center;padding:28px 16px 20px;border-top:1px solid rgba(212,175,55,0.15);margin-top:32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.25);border-radius:24px;padding:8px 20px;margin-bottom:12px;">
     <span style="font-size:1rem;">🛡️</span>
