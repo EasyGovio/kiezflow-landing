@@ -595,6 +595,13 @@ function renderLang(v) {
     
     html += didyouknowHtml +
         '<button class="btn-primary" onclick="startNeighborhood()">' + current.start + '</button>' +
+        '</div>' +
+        '<div style="margin:16px auto 0;max-width:400px;background:rgba(45,212,191,0.08);border:1px solid rgba(45,212,191,0.3);border-radius:16px;padding:16px;text-align:center;">' +
+        '<div style="font-size:0.85rem;color:#04162E;font-weight:700;margin-bottom:8px;">' +
+        (lang === "tr" ? "✅ Görlitzer Park için şimdiden yayında:" : (lang === "de" ? "✅ Bereits live für Görlitzer Park:" : "✅ Already live for Görlitzer Park:")) +
+        '</div>' +
+        '<a href="/kiez/netzwerk.html" style="display:inline-block;margin:4px 6px;color:#04162E;text-decoration:underline;font-size:0.85rem;">' + (lang === "tr" ? "Kiez-Netzwerk" : "Kiez-Netzwerk") + '</a>' +
+        '<a href="/kiez/guvenilir-isletmeler.html" style="display:inline-block;margin:4px 6px;color:#04162E;text-decoration:underline;font-size:0.85rem;">' + (lang === "tr" ? "Güvenilir İşletmeler" : (lang === "de" ? "Vertrauenswürdige Läden" : "Trusted Businesses")) + '</a>' +
         '</div>';
     v.innerHTML = html;
 }
