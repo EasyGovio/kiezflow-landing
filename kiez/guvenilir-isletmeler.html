@@ -1,1 +1,197 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vertrauenswürdige Läden im Kiez | KiezFlow</title>
+<meta name="description" content="Von Nachbarn empfohlene, vertrauenswürdige Geschäfte rund um Görlitzer Park, Wrangelkiez, Oranienstraße und Umgebung — von der Community selbst kuratiert.">
+<link rel="canonical" href="https://kiezflow.de/kiez/guvenilir-isletmeler.html">
+<style>
+* { box-sizing: border-box; }
+body { background:#04162E; color:#eaf2fb; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; margin:0; padding:0; line-height:1.6; }
+header { background:#0a1f3a; padding:14px 16px; border-bottom:1px solid rgba(45,212,191,0.15); position:sticky; top:0; display:flex; justify-content:space-between; align-items:center; z-index:10; }
+header a.logo { color:#2DD4BF; font-weight:800; text-decoration:none; font-size:1.05rem; }
+.lang-buttons { display:flex; gap:6px; }
+.lang-btn { background:rgba(255,255,255,0.08); border:1px solid rgba(45,212,191,0.3); border-radius:50%; width:34px; height:34px; font-size:1rem; cursor:pointer; }
+.lang-btn.active { background:#2DD4BF; }
+.container { max-width:760px; margin:0 auto; padding:20px 16px 60px; }
+.back-link { display:inline-block; margin-bottom:16px; color:#7a9ab8; text-decoration:none; font-size:0.85rem; }
+h1 { color:#2DD4BF; font-size:1.5rem; margin-bottom:6px; }
+.sub { color:#7a9ab8; font-size:0.88rem; margin-bottom:24px; }
+.biz-card { background:#0a1f3a; border:1px solid rgba(45,212,191,0.15); border-radius:12px; padding:16px 18px; margin-bottom:12px; }
+.biz-card .name { color:#2DD4BF; font-weight:700; font-size:1.05rem; }
+.biz-card .street { color:#7a9ab8; font-size:0.8rem; margin-top:2px; }
+.biz-card .note { color:#cad2db; font-size:0.9rem; margin-top:8px; }
+.biz-card .credit { color:#5f7f9a; font-size:0.75rem; margin-top:8px; }
+.empty-state { color:#7a9ab8; font-size:0.88rem; text-align:center; padding:24px; }
+.form-section { background:rgba(45,212,191,0.06); border:1px solid rgba(45,212,191,0.2); border-radius:16px; padding:22px 20px; margin-top:32px; }
+.form-section h2 { color:#2DD4BF; font-size:1.15rem; margin:0 0 6px; }
+.form-section .hint { color:#7a9ab8; font-size:0.85rem; margin-bottom:16px; }
+.form-group { display:flex; flex-direction:column; gap:10px; }
+.form-group input, .form-group textarea { background:rgba(255,255,255,0.06); border:1px solid rgba(45,212,191,0.25); border-radius:10px; padding:11px 14px; color:#eaf2fb; font-size:0.92rem; font-family:inherit; }
+.form-group textarea { resize:vertical; min-height:70px; }
+.form-group button { background:#2DD4BF; color:#04162E; border:none; border-radius:60px; padding:13px; font-weight:700; font-size:0.95rem; cursor:pointer; }
+#formStatus { font-size:0.85rem; margin-top:10px; text-align:center; min-height:20px; }
+.footer-note { text-align:center; color:#6a80a0; font-size:0.75rem; margin-top:30px; }
+</style>
+</head>
+<body>
+<header>
+  <a href="/" class="logo">🌊 KiezFlow</a>
+  <div class="lang-buttons">
+    <button class="lang-btn" data-lang="tr" title="Türkçe">🇹🇷</button>
+    <button class="lang-btn" data-lang="de" title="Deutsch">🇩🇪</button>
+    <button class="lang-btn" data-lang="en" title="English">🇬🇧</button>
+  </div>
+</header>
+<div class="container">
+  <a href="/kiez/netzwerk.html" class="back-link" data-i18n="back">← Zurück zum Kiez-Netzwerk</a>
+  <h1 data-i18n="title">Vertrauenswürdige Läden im Kiez</h1>
+  <div class="sub" data-i18n="sub">Von echten Nachbarn empfohlen — Geschäfte rund um Görlitzer Park, Wrangelstraße, Oranienstraße, Mariannenstraße und Schlesische Straße, die man kennt und denen man vertraut.</div>
 
+  <div id="bizList"></div>
+  <div id="emptyState" class="empty-state" data-i18n="empty" style="display:none;">Noch keine Einträge — sei die/der Erste!</div>
+
+  <div class="form-section">
+    <h2 data-i18n="formTitle">📝 Einen Laden empfehlen</h2>
+    <div class="hint" data-i18n="formHint">Kennst du einen Laden, der zum Kiez gehört? Schlag ihn vor — nach Prüfung wird er hier veröffentlicht.</div>
+    <div class="form-group">
+      <input type="text" id="isletme_adi" data-i18n-ph="phName" placeholder="Name des Ladens *">
+      <input type="text" id="sokak" data-i18n-ph="phStreet" placeholder="Straße">
+      <textarea id="not_metni" data-i18n-ph="phNote" placeholder="Warum vertraust du diesem Laden?"></textarea>
+      <input type="text" id="oneren_isim" data-i18n-ph="phYou" placeholder="Dein Name oder Spitzname (optional)">
+      <button id="submitBtn" data-i18n="submitBtn">Empfehlung senden</button>
+    </div>
+    <div id="formStatus"></div>
+  </div>
+
+  <div class="footer-note" data-i18n="footer">Alle Empfehlungen werden vor Veröffentlichung geprüft.</div>
+</div>
+
+<script>
+var API = 'https://pacdi.store';
+
+var I18N = {
+  de: {
+    back: '← Zurück zum Kiez-Netzwerk', title: 'Vertrauenswürdige Läden im Kiez',
+    sub: 'Von echten Nachbarn empfohlen — Geschäfte rund um Görlitzer Park, Wrangelstraße, Oranienstraße, Mariannenstraße und Schlesische Straße, die man kennt und denen man vertraut.',
+    empty: 'Noch keine Einträge — sei die/der Erste!',
+    formTitle: '📝 Einen Laden empfehlen', formHint: 'Kennst du einen Laden, der zum Kiez gehört? Schlag ihn vor — nach Prüfung wird er hier veröffentlicht.',
+    phName: 'Name des Ladens *', phStreet: 'Straße', phNote: 'Warum vertraust du diesem Laden?', phYou: 'Dein Name oder Spitzname (optional)',
+    submitBtn: 'Empfehlung senden', footer: 'Alle Empfehlungen werden vor Veröffentlichung geprüft.',
+    credit: 'Empfohlen von', sending: '⏳ Wird gesendet...', errName: 'Bitte einen Namen eingeben.', errGeneral: '⚠️ Fehler beim Senden.'
+  },
+  tr: {
+    back: '← Kiez-Netzwerk\'e dön', title: 'Mahallenin Güvenilir İşletmeleri',
+    sub: 'Gerçek komşular tarafından önerilmiş — Görlitzer Park, Wrangelstraße, Oranienstraße, Mariannenstraße ve Schlesische Straße çevresinde, tanınan ve güvenilen işyerleri.',
+    empty: 'Henüz kayıt yok — ilk sen ol!',
+    formTitle: '📝 Bir işletme öner', formHint: 'Mahallenin bir parçası olan bir işletme mi biliyorsun? Öner — incelendikten sonra burada yayınlanır.',
+    phName: 'İşletme adı *', phStreet: 'Sokak', phNote: 'Bu işletmeye neden güveniyorsun?', phYou: 'Adın ya da rumuzun (opsiyonel)',
+    submitBtn: 'Öneriyi gönder', footer: 'Tüm öneriler yayınlanmadan önce incelenir.',
+    credit: 'Öneren', sending: '⏳ Gönderiliyor...', errName: 'Lütfen bir isim gir.', errGeneral: '⚠️ Gönderim hatası.'
+  },
+  en: {
+    back: '← Back to Kiez Network', title: 'Trusted Local Businesses',
+    sub: 'Recommended by real neighbors — businesses around Görlitzer Park, Wrangelstraße, Oranienstraße, Mariannenstraße, and Schlesische Straße that people know and trust.',
+    empty: 'No entries yet — be the first!',
+    formTitle: '📝 Recommend a business', formHint: 'Know a business that\'s part of the Kiez? Suggest it — after review, it will be published here.',
+    phName: 'Business name *', phStreet: 'Street', phNote: 'Why do you trust this business?', phYou: 'Your name or nickname (optional)',
+    submitBtn: 'Send recommendation', footer: 'All recommendations are reviewed before publishing.',
+    credit: 'Recommended by', sending: '⏳ Sending...', errName: 'Please enter a name.', errGeneral: '⚠️ Error sending.'
+  }
+};
+
+var currentLang = 'de';
+
+function setLang(lang) {
+  currentLang = lang;
+  var t = I18N[lang];
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n-ph');
+    if (t[key] !== undefined) el.placeholder = t[key];
+  });
+  document.querySelectorAll('.lang-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+  });
+  document.documentElement.lang = lang;
+  try { localStorage.setItem('kiezflow_lang', lang); } catch(e) {}
+  renderList();
+}
+
+var listData = [];
+function loadList() {
+  fetch(API + '/api/kiez/oneriler/onayli')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      listData = (data.ok && data.oneriler) ? data.oneriler : [];
+      renderList();
+    })
+    .catch(function() { listData = []; renderList(); });
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderList() {
+  var container = document.getElementById('bizList');
+  var empty = document.getElementById('emptyState');
+  if (!listData.length) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  var t = I18N[currentLang];
+  container.innerHTML = listData.map(function(b) {
+    return '<div class="biz-card">' +
+      '<div class="name">' + esc(b.isletme_adi) + '</div>' +
+      (b.sokak ? '<div class="street">📍 ' + esc(b.sokak) + '</div>' : '') +
+      (b.not_metni ? '<div class="note">' + esc(b.not_metni) + '</div>' : '') +
+      (b.oneren_isim ? '<div class="credit">' + t.credit + ': ' + esc(b.oneren_isim) + '</div>' : '') +
+      '</div>';
+  }).join('');
+}
+
+document.getElementById('submitBtn').addEventListener('click', function() {
+  var t = I18N[currentLang];
+  var isletme_adi = document.getElementById('isletme_adi').value.trim();
+  var statusEl = document.getElementById('formStatus');
+  if (!isletme_adi) { statusEl.textContent = t.errName; return; }
+  statusEl.textContent = t.sending;
+  fetch(API + '/api/kiez/oneri', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      isletme_adi: isletme_adi,
+      sokak: document.getElementById('sokak').value.trim(),
+      not_metni: document.getElementById('not_metni').value.trim(),
+      oneren_isim: document.getElementById('oneren_isim').value.trim()
+    })
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      statusEl.textContent = data.ok ? ('✅ ' + data.mesaj) : (data.error || t.errGeneral);
+      if (data.ok) {
+        document.getElementById('isletme_adi').value = '';
+        document.getElementById('sokak').value = '';
+        document.getElementById('not_metni').value = '';
+        document.getElementById('oneren_isim').value = '';
+      }
+    })
+    .catch(function() { statusEl.textContent = t.errGeneral; });
+});
+
+document.querySelectorAll('.lang-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() { setLang(btn.getAttribute('data-lang')); });
+});
+
+var savedLang = null;
+try { savedLang = localStorage.getItem('kiezflow_lang'); } catch(e) {}
+setLang(savedLang || 'de');
+loadList();
+</script>
+</body>
+</html>
