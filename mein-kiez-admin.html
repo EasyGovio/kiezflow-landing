@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Kiez-Öneri Onay Paneli | KiezFlow (özel)</title>
+<style>
+* { box-sizing: border-box; }
+body { background:#04162E; color:#eaf2fb; font-family:system-ui,-apple-system,sans-serif; padding:16px; max-width:700px; margin:0 auto; }
+h1 { color:#2DD4BF; font-size:1.3rem; margin-bottom:4px; }
+.sub { color:#7a9ab8; font-size:0.82rem; margin-bottom:20px; }
+.key-row { display:flex; gap:8px; margin-bottom:18px; }
+.key-row input { flex:1; padding:9px 12px; border-radius:8px; border:1px solid rgba(45,212,191,0.3); background:#0a1f3a; color:#eaf2fb; font-size:0.85rem; }
+.key-row button, .refresh-btn { background:#2DD4BF; color:#04162E; border:none; padding:9px 16px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.82rem; }
+.msg { font-size:0.8rem; padding:8px 12px; border-radius:8px; margin-bottom:14px; display:none; }
+.msg.err { background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); color:#f87171; }
+.msg.ok { background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.3); color:#34D399; }
+.oneri-card { background:#0a1f3a; border:1px solid rgba(45,212,191,0.15); border-radius:12px; padding:16px 18px; margin-bottom:12px; }
+.oneri-card .name { color:#2DD4BF; font-weight:700; font-size:1.05rem; }
+.oneri-card .meta { color:#7a9ab8; font-size:0.78rem; margin:4px 0; }
+.oneri-card .note { color:#cad2db; font-size:0.88rem; margin:8px 0; }
+.oneri-card .durum { display:inline-block; font-size:0.72rem; padding:2px 10px; border-radius:20px; margin-bottom:6px; }
+.durum.bekliyor { background:rgba(246,180,95,0.15); color:#F6B45F; }
+.durum.onaylandi { background:rgba(52,211,153,0.15); color:#34D399; }
+.btn-row { display:flex; gap:8px; margin-top:10px; }
+.btn-onayla { background:#34D399; color:#04162E; border:none; border-radius:20px; padding:6px 16px; font-size:0.8rem; font-weight:700; cursor:pointer; }
+.btn-sil { background:transparent; border:1px solid rgba(248,113,113,0.4); color:#f87171; border-radius:20px; padding:6px 16px; font-size:0.8rem; cursor:pointer; }
+.empty { color:#7a9ab8; text-align:center; padding:30px 0; font-size:0.85rem; }
+</style>
+</head>
+<body>
+  <h1>📋 Kiez Öneri Onay Paneli</h1>
+  <div class="sub">Yalnızca yönetici görünümü — arama motorlarına kapalı.</div>
+
+  <div class="key-row">
+    <input type="password" id="apiKeyInput" placeholder="X-API-Key (admin anahtarı)">
+    <button id="loadBtn">Yükle</button>
+  </div>
+  <div id="msg" class="msg"></div>
+  <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+    <button class="refresh-btn" id="refreshBtn" style="display:none;">🔄 Yenile</button>
+  </div>
+  <div id="list"></div>
+  <div id="emptyState" class="empty" style="display:none;">Henüz hiç öneri yok.</div>
+
+<script>
+var BACKEND = 'https://pacdi.store';
+var currentList = [];
+
+function showMsg(text, type) {
+  var el = document.getElementById('msg');
+  el.textContent = text; el.className = 'msg ' + type; el.style.display = 'block';
+}
+function getKey() { return document.getElementById('apiKeyInput').value.trim(); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtDate(s) {
+  if (!s) return '—';
+  try { return new Date(s + 'Z').toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }); }
+  catch(e) { return s; }
+}
+
+function render() {
+  var container = document.getElementById('list');
+  var empty = document.getElementById('emptyState');
+  if (!currentList.length) { container.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
+  container.innerHTML = currentList.map(function(o) {
+    return '<div class="oneri-card">' +
+      '<span class="durum ' + o.durum + '">' + (o.durum === 'onaylandi' ? '✅ Onaylandı' : '⏳ Bekliyor') + '</span>' +
+      '<div class="name">' + esc(o.isletme_adi) + '</div>' +
+      '<div class="meta">📍 ' + esc(o.sokak || '—') + ' · Öneren: ' + esc(o.oneren_isim || 'Anonim') +
+      (o.oneren_iletisim ? ' (' + esc(o.oneren_iletisim) + ')' : '') + ' · ' + fmtDate(o.created_at) + '</div>' +
+      (o.not_metni ? '<div class="note">' + esc(o.not_metni) + '</div>' : '') +
+      '<div class="btn-row">' +
+      (o.durum !== 'onaylandi' ? '<button class="btn-onayla" data-id="' + o.id + '">✅ Onayla</button>' : '') +
+      '<button class="btn-sil" data-id="' + o.id + '">🗑 Sil</button>' +
+      '</div></div>';
+  }).join('');
+
+  container.querySelectorAll('.btn-onayla').forEach(function(btn) {
+    btn.addEventListener('click', function() { onayla(btn.getAttribute('data-id')); });
+  });
+  container.querySelectorAll('.btn-sil').forEach(function(btn) {
+    btn.addEventListener('click', function() { sil(btn.getAttribute('data-id')); });
+  });
+}
+
+function loadList() {
+  var key = getKey();
+  if (!key) { showMsg('API anahtarı gerekli.', 'err'); return; }
+  try { localStorage.setItem('kiez_admin_key', key); } catch(e) {}
+  showMsg('Yükleniyor...', 'ok');
+  fetch(BACKEND + '/api/kiez/oneriler', { headers: { 'X-API-Key': key } })
+    .then(function(r) { if (r.status === 401) throw new Error('Anahtar yanlış.'); return r.json(); })
+    .then(function(data) {
+      if (!data.ok) throw new Error(data.error || 'Hata');
+      currentList = data.oneriler || [];
+      document.getElementById('msg').style.display = 'none';
+      document.getElementById('refreshBtn').style.display = 'inline-block';
+      render();
+    })
+    .catch(function(err) { showMsg('⚠️ ' + err.message, 'err'); });
+}
+
+function onayla(id) {
+  fetch(BACKEND + '/api/kiez/oneriler/' + id + '/onayla', { method: 'PUT', headers: { 'X-API-Key': getKey() } })
+    .then(function(r) { return r.json(); })
+    .then(function() { showMsg('Onaylandı! Şimdi göndereni teşekkür etmeyi unutma 🙏', 'ok'); loadList(); });
+}
+
+function sil(id) {
+  if (!confirm('Bu öneriyi silmek istediğine emin misin?')) return;
+  fetch(BACKEND + '/api/kiez/oneriler/' + id, { method: 'DELETE', headers: { 'X-API-Key': getKey() } })
+    .then(function(r) { return r.json(); })
+    .then(function() { loadList(); });
+}
+
+document.getElementById('loadBtn').addEventListener('click', loadList);
+document.getElementById('refreshBtn').addEventListener('click', loadList);
+
+try {
+  var savedKey = localStorage.getItem('kiez_admin_key');
+  if (savedKey) document.getElementById('apiKeyInput').value = savedKey;
+} catch(e) {}
+</script>
+</body>
+</html>
