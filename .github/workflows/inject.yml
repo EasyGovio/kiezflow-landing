@@ -3,6 +3,8 @@ name: Inject PACDI Standards
 on:
   push:
     branches: [ main ]
+  schedule:
+    - cron: '0 * * * *'   # her saat başı otomatik çalışır
   workflow_dispatch:
 
 permissions:
@@ -20,6 +22,10 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Ana repodan güncel inject.py çek
+        run: |
+          curl -fsSL "https://raw.githubusercontent.com/EasyGovio/pacdi-standards/main/inject.py?nocache=$(date +%s)" -o inject.py
+
       - name: Run inject script
         run: python3 inject.py
 
@@ -29,7 +35,12 @@ jobs:
           git config --local user.name "PACDI Bot"
           git add -A
           git diff --staged --quiet || (
-            git commit -m "Auto: Analytics + AdSense + Canonical + Mobile Header Fix" &&
+            git commit -m "Auto: Analytics + AdSense + Canonical + Mobile Header Fix (merkezi inject.py senkron)" &&
             git pull --rebase origin main &&
             git push
           )
+
+      - name: IndexNow bildirimi gönder
+        run: |
+          curl -fsSL "https://raw.githubusercontent.com/EasyGovio/pacdi-standards/main/indexnow_ping.py" -o indexnow_ping.py
+          python3 indexnow_ping.py
