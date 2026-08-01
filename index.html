@@ -723,9 +723,16 @@ function renderResult(v) {
         '<button class="btn-waitlist" onclick="submitWaitlist()">' + current.waitlist_button + '</button>' +
         '</div>' +
         '</div>';
+    var kiezLinksHtml = '<div class="resource-item" style="text-align:center;border:1px solid rgba(45,212,191,0.3);">' +
+        '<strong>' + (lang === "tr" ? "🗺️ Görlitzer Park Bölgesi İçin Hazır" : (lang === "de" ? "🗺️ Bereits verfügbar für Görlitzer Park" : "🗺️ Already available for Görlitzer Park")) + '</strong><br>' +
+        '<small>' + (lang === "tr" ? "Bu bölge için gerçek, güncel içerik yayında:" : (lang === "de" ? "Für diese Gegend gibt es bereits echte, aktuelle Inhalte:" : "Real, up-to-date content is already live for this area:")) + '</small><br>' +
+        '<a href="/kiez/netzwerk.html" style="display:inline-block;margin:8px 6px 0;color:#2DD4BF;text-decoration:underline;">' + (lang === "tr" ? "Kiez-Netzwerk" : "Kiez-Netzwerk") + '</a>' +
+        '<a href="/kiez/guvenilir-isletmeler.html" style="display:inline-block;margin:8px 6px 0;color:#2DD4BF;text-decoration:underline;">' + (lang === "tr" ? "Güvenilir İşletmeler" : (lang === "de" ? "Vertrauenswürdige Läden" : "Trusted Businesses")) + '</a>' +
+        '</div>';
     var html = '<div class="result-card">' +
         '<h3>' + current.results_title + ' — ' + selectedNeighborhood + '</h3>' +
         resourcesHtml +
+        kiezLinksHtml +
         '<div class="disclaimer">' + current.realtime_note + '</div>' +
         '</div>' +
         '<div class="share-section">' +
