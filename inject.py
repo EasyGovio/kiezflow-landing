@@ -611,6 +611,15 @@ for root, dirs, files in os.walk('.'):
                 )
                 print('Fixed: stale share-bar (missing flex-basis) ->', fpath)
 
+            # ── PACDI paylaşım çubuğu — eski gömülü (sabit dilli) sürümü merkezi share-bar.js'e taşı ──
+            _old_share_re = re.compile(
+                r'<div class="pacdi-share-bar" id="pacdiShareBar"[^>]*></div>\s*<script>\s*\(function\(\)\{.*?pacdiShareBar.*?\}\)\(\);\s*</script>',
+                re.S
+            )
+            if _old_share_re.search(content) and 'share-bar.js' not in content:
+                content = _old_share_re.sub(SHARE_BAR_SCRIPT.strip(), content, count=1)
+                print('Migrated: old inline share-bar -> centralized share-bar.js ->', fpath)
+
             # ── PACDI paylaşım çubuğu — her modülün altına, FSEK footer'ın hemen üstüne ──
             if ('pacdiShareBar' not in content and fname not in SKIP_FOOTER
                     and '<div id="pacdi-fsek"' in content):
