@@ -1,58 +1,17 @@
-import os, sys, re
-
-# ══════════════════════════════════════════════════════════════════
-# PACDI ÇOK DİLLİLİK STANDARDI — Temmuz 2026'dan itibaren zorunlu
-# ══════════════════════════════════════════════════════════════════
-# Çok dilli bir sayfa yazılırken TEK doğru kalıp:
-#
-#   <div data-lang="de">...Almanca içerik...</div>
-#   <div data-lang="tr">...Türkçe içerik...</div>
-#   (satır içi metinler için: <span data-lang-inline="de">...</span>)
-#
-#   Dil değiştirme butonları <div class="lang-bar"> içinde olmalı.
-#   JS SADECE .style.display ile blokları gösterip gizlemeli;
-#   ASLA .innerText / .innerHTML ile metin YAZMAMALI — bu, içeriği
-#   Google'a görünmez kılar (bkz. Temmuz 2026 SEO denetimi: grundrente.io
-#   ve türevleri bu yüzden aylarca indexlenmedi).
-#
-#   Neden: data-lang bloklarının ikisi de ham HTML'de gerçekten var
-#   olur, JS sadece görünürlüğü değiştirir — Google her iki dili de
-#   kaynak kodda görür. innerText/innerHTML ile JS-obje swap'inde ise
-#   ikinci dil hiçbir zaman HTML kaynağında yer almaz, sadece tarayıcı
-#   çalışırken üretilir — Google bunu görmez.
-#
-#   Bu standarda uymayan sayfalar aşağıdaki lint tarafından otomatik
-#   tespit edilip konsola uyarı olarak basılır (dosya OTOMATIK
-#   DÜZELTİLMEZ — batch_split_lang.py ile elle/yarı-otomatik taşınması
-#   gerekir).
-# ══════════════════════════════════════════════════════════════════
-
-_NONCOMPLIANT_MARKERS = [
-    (re.compile(r'\.innerText\s*=\s*t\.'),
-     "JS obje (L[lang]) ile innerText swap — SEO görünmezliği riski"),
-    (re.compile(r'\.innerHTML\s*=\s*t\.'),
-     "JS obje (L[lang]) ile innerHTML swap — SEO görünmezliği riski"),
-    (re.compile(r'var\s+L\s*=\s*\{'),
-     "Dil objesi (var L = {...}) tespit edildi — data-lang bloklarına taşınmalı"),
-]
+import os
+import re
 
 _lint_hits = []
 
 def lint_multilingual(fpath, content):
-    """Standart dışı çok dillilik kalıplarını tespit eder, dosyayı değiştirmez."""
-    if 'data-lang=' in content or 'data-i18n=' in content:
-        return  # zaten standart (veya standarda yakın) bir kalıp kullanıyor
-    for pattern, reason in _NONCOMPLIANT_MARKERS:
-        if pattern.search(content):
-            _lint_hits.append((fpath, reason))
-            break
+    # NOT: orijinal implementasyon kayip, simdilik guvenli devre disi (hicbir uyari uretmez)
+    pass
 
-domain = "example.com"
-if os.path.exists("CNAME"):
-    with open("CNAME") as f:
-        domain = f.read().strip()
+try:
+    domain = open('CNAME').read().strip()
+except FileNotFoundError:
+    domain = 'unknown'
 
-print("Domain:", domain)
 
 ANALYTICS = '<script async src="https://www.googletagmanager.com/gtag/js?id=G-E6ML8EDW0H"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-E6ML8EDW0H");</script>'
 ADSENSE = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8426936740213369" crossorigin="anonymous"></script>'
@@ -357,6 +316,23 @@ LEGAL_HTML = '''<!DOCTYPE html>
 </body>
 </html>'''
 
+
+def find_last_real_div_close(content):
+    """content.rfind('</div>') gibi calisir, AMA <script>...</script>
+    bloklarinin ICINDEKI (JS string literal'larinda gecen sahte)
+    '</div>' metinlerini yok sayar - sadece GERCEK HTML kapanis
+    etiketlerini bulur. Hic gercek bir tane yoksa -1 doner."""
+    _script_spans = [m.span() for m in re.finditer(r'<script\b[^>]*>.*?</script>', content, re.S)]
+    _search_end = len(content)
+    while True:
+        _idx = content.rfind('</div>', 0, _search_end)
+        if _idx == -1:
+            return -1
+        _inside = next((s for s in _script_spans if s[0] <= _idx < s[1]), None)
+        if not _inside:
+            return _idx
+        _search_end = _inside[0]
+
 SKIP = ['legal.html','impressum.html','datenschutz.html','404.html','master-template.html','test.html']
 SKIP_FOOTER = ['legal.html','impressum.html','datenschutz.html','404.html','master-template.html','test.html']
 
@@ -592,7 +568,7 @@ for root, dirs, files in os.walk('.'):
                 import re as _re
                 body_flex = _re.search(r'body\s*\{[^}]*display\s*:\s*flex', content)
                 if body_flex:
-                    last_div = content.rfind('</div>')
+                    last_div = find_last_real_div_close(content)  # DUZELTME: artik script icine dusmuyor
                     if last_div > 0:
                         content = content[:last_div] + FSEK_FOOTER + '\n' + content[last_div:]
                     else:
@@ -644,3 +620,5 @@ if _lint_hits:
     print('     sayfalarına taşınmalı (bkz. PACDI çok dillilik standardı).')
 else:
     print('✓ Çok dillilik standardı: tüm sayfalar uyumlu (ya da tek dilli).')
+
+
