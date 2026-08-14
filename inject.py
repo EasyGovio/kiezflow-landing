@@ -399,17 +399,57 @@ with open('manifest.json', 'w', encoding='utf-8') as f:
 print('manifest.json created:', domain)
 
 # ── sw.js otomatik oluştur ──
-sw = "const CACHE_NAME = 'pacdi-v1';\n"
+# CACHE_NAME her calistirmada degisen bir build damgasina bagli: inject.py
+# saatte bir calisip icerigi guncelledigi icin, sw.js'in KENDISI de her seferinde
+# farkli byte'lar icermeli — yoksa tarayici "SW hic degismemis" sanip
+# install/activate'i asla yeniden tetiklemiyor ve eski cache sonsuza dek
+# sunucudaki guncel icerikle git gide tutarsizlasiyor (iOS Safari'de bu
+# tutarsizlik "FetchEvent.respondWith received an error: TypeError: Load failed"
+# olarak patliyor; Android/Chrome ayni durumu sessizce tolere ediyor).
+import time as _time
+_build_id = _time.strftime('%Y%m%d-%H%M%S', _time.gmtime())
+
+sw = "const CACHE_NAME = 'pacdi-" + _build_id + "';\n"
 sw += "const ASSETS = ['./'];\n"
-sw += "self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS))));\n"
-sw += "self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))));\n"
-sw += "self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => {\n"
-sw += "  if (r) { fetch(e.request).then(nr => { if(nr.status===200) caches.open(CACHE_NAME).then(c=>c.put(e.request,nr)); }).catch(()=>{}); return r; }\n"
-sw += "  return fetch(e.request);\n"
-sw += "})));\n"
+sw += "self.addEventListener('install', e => {\n"
+sw += "  self.skipWaiting();\n"
+sw += "  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));\n"
+sw += "});\n"
+sw += "self.addEventListener('activate', e => {\n"
+sw += "  e.waitUntil(\n"
+sw += "    caches.keys()\n"
+sw += "      .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))\n"
+sw += "      .then(() => self.clients.claim())\n"
+sw += "  );\n"
+sw += "});\n"
+sw += "self.addEventListener('fetch', e => {\n"
+sw += "  if (e.request.method !== 'GET') return;\n"
+sw += "  e.respondWith(\n"
+sw += "    caches.match(e.request).then(cached => {\n"
+sw += "      const revalidate = fetch(e.request)\n"
+sw += "        .then(fresh => {\n"
+sw += "          if (fresh && fresh.status === 200) {\n"
+sw += "            const copy = fresh.clone();\n"
+sw += "            caches.open(CACHE_NAME).then(c => c.put(e.request, copy));\n"
+sw += "          }\n"
+sw += "          return fresh;\n"
+sw += "        })\n"
+sw += "        .catch(() => null);\n"
+sw += "      e.waitUntil(revalidate);\n"
+sw += "      if (cached) return cached;\n"
+sw += "      return revalidate.then(fresh => {\n"
+sw += "        if (fresh) return fresh;\n"
+sw += "        return new Response('Baglanti sorunu olustu, lutfen tekrar deneyin.', {\n"
+sw += "          status: 503, statusText: 'Service Unavailable',\n"
+sw += "          headers: { 'Content-Type': 'text/plain; charset=utf-8' }\n"
+sw += "        });\n"
+sw += "      });\n"
+sw += "    })\n"
+sw += "  );\n"
+sw += "});\n"
 with open('sw.js', 'w', encoding='utf-8') as f:
     f.write(sw)
-print('sw.js created:', domain)
+print('sw.js created:', domain, '(build', _build_id + ')')
 
 # ── ads.txt otomatik oluştur ──
 with open('ads.txt', 'w', encoding='utf-8') as f:
