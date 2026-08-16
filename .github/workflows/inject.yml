@@ -3,8 +3,8 @@ name: Inject PACDI Standards
 on:
   push:
     branches: [ main ]
-  schedule:
-    - cron: '0 * * * *'   # her saat başı otomatik çalışır
+ schedule:
+  - cron: '0 */6 * * *'   # 6 saatte bir çalışır
   workflow_dispatch:
 
 permissions:
